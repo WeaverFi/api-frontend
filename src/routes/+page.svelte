@@ -1,14 +1,10 @@
 <script>
 
 	// Imports:
-	import { onMount } from 'svelte';
-
-	// Initializations & Exports:
 	// :3
 
-	onMount(() => {
-		// :3
-	});
+	// Initializations:
+	// :3
 	
 </script>
 
@@ -16,8 +12,8 @@
 
 <!-- SvelteKit Dynamic Header -->
 <svelte:head>
-	<title>Home</title>
-	<meta name="description" content="Home Page" />
+	<title>WeaverFi API</title>
+	<meta name="description" content="The open-source, multi-chain DeFi portfolio tracker's very own API." />
 </svelte:head>
 
 <!-- Page Content -->

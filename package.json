@@ -1,6 +1,6 @@
 {
-	"name": "sveltekit-pwa-template",
-	"version": "0.0.1",
+	"name": "api-frontend",
+	"version": "0.1.0",
 	"type": "module",
 	"scripts": {
 		"dev": "vite dev",
@@ -8,13 +8,16 @@
 		"preview": "vite preview"
 	},
 	"devDependencies": {
-		"@sveltejs/adapter-auto": "next",
-		"@sveltejs/kit": "1.0.0-next.427",
+		"@sveltejs/adapter-static": "next",
+		"@sveltejs/kit": "1.0.0-next.522",
 		"svelte": "^3.49.0",
 		"svelte-check": "^2.8.1",
 		"svelte-preprocess": "^4.10.7",
 		"tslib": "^2.4.0",
 		"typescript": "^4.7.4",
 		"vite": "^3.0.9"
+	},
+	"dependencies": {
+		"3pi": "0.5.1"
 	}
 }
