@@ -1,19 +1,54 @@
 <script lang="ts">
 
 	// Imports:
-	// :3
+	import { getKeys } from '$lib/functions';
+	import Wallet from '$lib/Wallet.svelte';
+
+	// Type Imports:
+	import type { ethers } from 'ethers';
+	import type { KeyInfo } from '3pi/dist/types';
+	import type { Chain, Address, ENSDomain } from 'weaverfi/dist/types';
 
 	// Initializations:
-	// :3
+	let provider: ethers.providers.JsonRpcProvider | undefined;
+  let signer: ethers.providers.JsonRpcSigner | undefined;
+  let chainID: number | undefined;
+	let address: Address | undefined;
+	let ens: ENSDomain | undefined;
+	let keys: (KeyInfo & { chain: Chain })[] = [];
+	let fetching: boolean = false;
+
+	// Reactive Updates:
+	$: address, getWalletInfo();
+
+	// Function to get wallet info:
+	const getWalletInfo = async () => {
+		fetching = true;
+		keys = await getKeys(address);
+		fetching = false;
+	}
 
 </script>
 
 <!-- #################################################################################################### -->
 
 <section>
+
+	<!-- Top Bar -->
 	<div class="top">
 		<h2>Manage your keys</h2>
-		<button>Connect Wallet</button>
+		<Wallet bind:provider bind:signer bind:chainID bind:address bind:ens />
+	</div>
+
+	<!-- Keys Display -->
+	<div class="keys">
+		{#if keys && keys.length > 0}
+			<!-- TODO - display all keys -->
+		{:else if address}
+			<!-- TODO - new key -->
+		{:else}
+			<span>Connect your wallet to check on and manage your keys!</span>
+		{/if}
 	</div>
 </section>
 
@@ -28,23 +63,6 @@
 	div.top {
 		display: flex;
 		justify-content: space-between;
-	}
-
-	button {
-		padding: .8em;
-		text-align: center;
-		font-weight: bold;
-		color: var(--secondaryColor);
-		background-color: var(--accentColor);
-		border: 3px solid var(--accentColor);
-		border-radius: 2em;
-		cursor: pointer;
-		transition: all .3s ease-out;
-	}
-
-	button:hover {
-		color: var(--fontColor);
-		background-color: var(--primaryColor);
 	}
 	
 </style>

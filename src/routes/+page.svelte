@@ -36,7 +36,7 @@
 <!-- Window Bindings -->
 <svelte:window bind:scrollY />
 
-<!-- Navbar Section -->
+<!-- Navbar -->
 <Navbar bind:scrollY twitterLink={links.twitter} discordLink={links.discord} githubLink={links.github} />
 
 <!-- Header Section -->
