@@ -1,24 +1,19 @@
-<script>
+<script lang="ts">
 
 	// Imports:
-	import { onMount } from 'svelte';
+	// :3
 
 	// Initializations:
 	// :3
-
-	onMount(() => {
-		// :3
-	});
 
 </script>
 
 <!-- #################################################################################################### -->
 
-<div class="template">
-
-	<!-- HTML Goes Here -->
-
-</div>
+<section>
+	<h2>Pricing Section</h2>
+	<p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Deserunt officiis distinctio aperiam odit ratione architecto eum dolores quaerat, itaque cumque quidem quasi, quisquam mollitia error possimus ullam modi asperiores ipsam.</p>
+</section>
 
 <!-- #################################################################################################### -->
 
