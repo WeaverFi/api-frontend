@@ -8,9 +8,17 @@ import type { KeyInfo } from '3pi/dist/types';
 import type { Chain, Address } from 'weaverfi/dist/types';
 
 // 3PI Contract Addresses:
-const contractAddresses: Partial<Record<Chain, Address>> = {
+export const contractAddresses: Partial<Record<Chain, Address>> = {
   // <TODO> add contract addresses
 }
+
+// 3PI Price Tiers:
+export const apiTiers: { rateLimit: number, price: number }[] = [
+  { rateLimit: 50, price: 0 },
+  { rateLimit: 500, price: 10 },
+  { rateLimit: 1500, price: 25 },
+  { rateLimit: 4000, price: 50 }
+];
 
 /* ========================================================================================================================================================================= */
 
@@ -40,18 +48,20 @@ export const getChain = (chainID: number): Chain | undefined => {
 /* ========================================================================================================================================================================= */
 
 // Function to get an address's keys:
-export const getKeys = (address: Address | undefined) => {
+export const getKeys = async (address: Address | undefined) => {
   const keys: (KeyInfo & { chain: Chain })[] = [];
   if(address) {
-    Object.keys(contractAddresses).forEach(stringChain => {
+    for(const stringChain of Object.keys(contractAddresses)) {
       const chain = stringChain as Chain;
       const keyManager = initKeyManager(chain);
       if(keyManager) {
-        // <TODO> get user keys
-        // <TODO> append chain to keyinfo object
-        // <TODO> push entry to keys
+        const userKeys = await keyManager.getUserKeys(address);
+        for(const keyHash of userKeys) {
+          const keyInfo = await keyManager.getKeyInfo(keyHash);
+          keys.push({ ...keyInfo, chain });
+        }
       }
-    });
+    }
   }
   return keys;
 }
