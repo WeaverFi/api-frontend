@@ -2,11 +2,11 @@
 
 	// Imports:
 	import Keys from '$lib/Keys.svelte';
+	import Info from '$lib/Info.svelte';
 	import Navbar from '$lib/Navbar.svelte';
 	import Header from '$lib/Header.svelte';
 	import Footer from '$lib/Footer.svelte';
 	import Pricing from '$lib/Pricing.svelte';
-	import RateLimits from '$lib/RateLimits.svelte';
 
 	// Links:
 	const links = {
@@ -48,8 +48,8 @@
 <!-- Pricing Section -->
 <Pricing />
 
-<!-- Rate Limits Section -->
-<RateLimits />
+<!-- Info Section -->
+<Info />
 
 <!-- Footer -->
 <Footer {links} />

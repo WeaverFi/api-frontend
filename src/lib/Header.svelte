@@ -1,8 +1,5 @@
 <script lang="ts">
 
-	// Imports:
-	// :3
-
 	// Initializations:
 	export let docsLink: string;
 

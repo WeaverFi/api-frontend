@@ -47,7 +47,7 @@
 		{:else if address}
 			<!-- TODO - new key -->
 		{:else}
-			<span>Connect your wallet to check on and manage your keys!</span>
+			<span class="info">Connect your wallet to check on and manage your keys!</span>
 		{/if}
 	</div>
 </section>
@@ -63,6 +63,16 @@
 	div.top {
 		display: flex;
 		justify-content: space-between;
+	}
+
+	div.keys {
+		margin-top: 2em;
+		text-align: center;
+	}
+
+	span.info {
+		color: var(--secondaryFontColor);
+		font-size: .9em;
 	}
 	
 </style>
