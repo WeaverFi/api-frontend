@@ -17,13 +17,19 @@
 		apiKey?: string
 	}
 
+	// Activation Cost Type:
+	interface ActivationCost {
+		wei: ethers.BigNumber | undefined
+		tokens: number | undefined
+	}
+
 	// Initializations:
   export let chain: Chain | undefined;
 	export let address: Address | undefined;
   export let signer: ethers.providers.JsonRpcSigner | undefined;
 	const secondsInAMonth: number = 2_628_000;
 	const newKeyInfo: NewKeyInfo = { chain: 'op', duration: secondsInAMonth, tierID: 1 };
-	const activationCost: { wei: number, tokens: number } = { wei: -1, tokens: -1 };
+	const activationCost: ActivationCost = { wei: undefined, tokens: undefined };
 	let token: Token | undefined = undefined;
 	let isCollapsed: boolean = true;
 	let allowance: number = 0;
@@ -55,11 +61,11 @@
 	// Function to calculate new key activation cost:
 	const calcActivationCost = async () => {
 		if(keyManager && token) {
-			activationCost.wei = newKeyInfo.duration * apiTiers[newKeyInfo.tierID].weiPricePerSecond;
-			activationCost.tokens = activationCost.wei / (10 ** token.decimals);
+			activationCost.wei = ethers.BigNumber.from(apiTiers[newKeyInfo.tierID].weiPricePerSecond).mul(newKeyInfo.duration);
+			activationCost.tokens = activationCost.wei.div(10 ** token.decimals).toNumber();
 		} else {
-			activationCost.wei = -1;
-			activationCost.tokens = -1;
+			activationCost.wei = undefined;
+			activationCost.tokens = undefined;
 		}
 	}
 
@@ -77,7 +83,7 @@
 
 	// Function to update approval amount:
 	const updateApproval = async () => {
-		if(keyManager && signer) {
+		if(keyManager && signer && activationCost.wei) {
 			approvalInProgress = true;
 			if(infiniteApproval) {
 				await keyManager.approve(ethers.constants.MaxUint256, signer);
@@ -104,9 +110,9 @@
 			<span>Chain: {newKeyInfo.chain}</span>
 			<span>Duration: {newKeyInfo.duration}</span>
 			<span>Tier ID: {newKeyInfo.tierID}</span>
-			{#if keyManager && token && chain && activationCost.wei !== -1}
+			{#if keyManager && token && chain && activationCost.tokens}
 				{#if chain === newKeyInfo.chain}
-					{#if allowance >= activationCost.wei}
+					{#if allowance >= activationCost.tokens}
 						<span class="createNewKey" on:click={createNewKey} on:keydown={createNewKey}>Create New Key</span>
 					{:else}
 						<input type="checkbox" id="infiniteApproval" bind:checked={infiniteApproval} >
