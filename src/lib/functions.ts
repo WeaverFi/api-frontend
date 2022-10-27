@@ -13,12 +13,14 @@ export const contractAddresses: Partial<Record<Chain, Address>> = {
 }
 
 // 3PI Price Tiers:
-export const apiTiers: { rateLimit: number, price: number }[] = [
-  { rateLimit: 50, price: 0 },
-  { rateLimit: 500, price: 10 },
-  { rateLimit: 1500, price: 25 },
-  { rateLimit: 4000, price: 50 }
+export const apiTiers: { dailyRateLimit: number, monthlyPrice: number, weiPricePerSecond: number }[] = [
+  { dailyRateLimit: 50, monthlyPrice: 0, weiPricePerSecond: 0 },
+  { dailyRateLimit: 500, monthlyPrice: 10, weiPricePerSecond: 3_805_175_038_052 },
+  { dailyRateLimit: 1500, monthlyPrice: 25, weiPricePerSecond: 9_512_937_595_130 },
+  { dailyRateLimit: 4000, monthlyPrice: 50, weiPricePerSecond: 19_025_875_190_259 }
 ];
+
+// <TODO> make sure the wei prices above match the ones in the contract exactly
 
 /* ========================================================================================================================================================================= */
 

@@ -7,20 +7,22 @@
   import weaver from 'weaverfi';
 
   // Type Imports:
-  import type { Address, ENSDomain } from 'weaverfi/dist/types';
+  import type { Chain, Address, ENSDomain } from 'weaverfi/dist/types';
 
   // Initializations:
-  export let provider: ethers.providers.JsonRpcProvider | undefined;
-  export let signer: ethers.providers.JsonRpcSigner | undefined;
-  export let chainID: number | undefined;
-  export let address: Address | undefined;
-  export let ens: ENSDomain | undefined;
+  export let provider: ethers.providers.JsonRpcProvider | undefined = undefined;
+  export let signer: ethers.providers.JsonRpcSigner | undefined = undefined;
+  export let chainID: number | undefined = undefined;
+  export let chain: Chain | undefined = undefined;
+  export let address: Address | undefined = undefined;
+  export let ens: ENSDomain | undefined = undefined;
 
   // Function to check wallet chain ID:
   const checkChainID = async () => {
     try {
       const hexChainID: string = await (window as any).ethereum.request({ method: 'eth_chainId' });
       chainID = parseInt(hexChainID, 16);
+      chain = chainID ? getChain(chainID) : undefined;
     } catch {
       console.error('Something went wrong while checking chain ID.');
     }
@@ -32,19 +34,6 @@
       const accounts: string[] = await (window as any).ethereum.request({ method: 'eth_requestAccounts' });
       if(accounts.length > 0) {
         address = accounts[0] as Address;
-        if(chainID) {
-          const chain = getChain(chainID);
-          if(chain) {
-            provider = new ethers.providers.JsonRpcProvider(weaver[chain].getInfo().rpcs[0]);
-            signer = provider.getSigner();
-          } else {
-            provider = undefined;
-            signer = undefined;
-          }
-        } else {
-          provider = undefined;
-          signer = undefined;
-        }
         await checkENS();
       } else {
         address = undefined;
@@ -59,11 +48,27 @@
     }
   }
 
+  // Function to check wallet signer:
+  const checkSigner = async () => {
+    try {
+      if(chain) {
+        provider = new ethers.providers.JsonRpcProvider(weaver[chain].getInfo().rpcs[0]);
+        signer = provider.getSigner();
+      } else {
+        provider = undefined;
+        signer = undefined;
+      }
+    } catch {
+      console.error('Something went wrong while checking wallet\'s signer.');
+    }
+  }
+
   // Function to check ENS domain for a given wallet address:
   const checkENS = async () => {
     try {
-      if(address && provider) {
-        const name = await provider.lookupAddress(address);
+      if(address) {
+        const ethProvider = new ethers.providers.JsonRpcProvider(weaver.eth.getInfo().rpcs[0]);
+        const name = await ethProvider.lookupAddress(address);
         ens = name as ENSDomain ?? undefined;
       } else {
         ens = undefined;
@@ -83,8 +88,8 @@
 
     // Event handlers:
     if(typeof (window as any).ethereum !== 'undefined') {
-      (window as any).ethereum.on('chainChanged', checkChainID);
-      (window as any).ethereum.on('accountsChanged', checkAddress);
+      (window as any).ethereum.on('chainChanged', async () => { await checkChainID(); await checkSigner(); });
+      (window as any).ethereum.on('accountsChanged', async () => { await checkAddress(); await checkSigner(); });
     }
 
   });
@@ -94,10 +99,15 @@
 <!-- #################################################################################################### -->
 
 <div id="wallet">
-  {#if ens}
-    <span>{ens}</span>
-  {:else if address}
-    <span>{address.slice(0, 6)}...{address.slice(-4)}</span>
+  {#if address}
+    {#if chain}
+      <img src="/chains/{chain}.svg" title="{weaver[chain].getInfo().name}" alt="{chain.toUpperCase()} Chain">
+    {/if}
+    {#if ens}
+      <span title="{address}">{ens}</span>
+    {:else}
+      <span title="{address}">{address.slice(0, 6)}...{address.slice(-4)}</span>
+    {/if}
   {:else}
     <button on:click={connect}>Connect Wallet</button>
   {/if}
@@ -110,6 +120,12 @@
   #wallet {
     display: flex;
     align-items: center;
+    gap: .5em;
+  }
+
+  img {
+    height: 1.8em;
+    width: 1.8em;
   }
 
   button {

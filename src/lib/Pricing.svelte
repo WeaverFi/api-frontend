@@ -25,27 +25,27 @@
 			<div class="tier">
 				<div class="prices">
 					<span class="price">
-						{#if tier.price === 0}
+						{#if tier.monthlyPrice === 0}
 							Free
 						{:else if timeSelection === 'weekly'}
-							${(tier.price * 12 / 52).toLocaleString(undefined, { maximumFractionDigits: 2 })}
+							${(tier.monthlyPrice * 12 / 52).toLocaleString(undefined, { maximumFractionDigits: 2 })}
 						{:else if timeSelection === 'monthly'}
-							${tier.price}
+							${tier.monthlyPrice}
 						{/if}
 					</span>
-					{#if tier.price}
-						<span class="small">${(tier.price * 12 / 365).toLocaleString(undefined, { maximumFractionDigits: 2 })} /day</span>
+					{#if tier.monthlyPrice}
+						<span class="small">${(tier.monthlyPrice * 12 / 365).toLocaleString(undefined, { maximumFractionDigits: 2 })} /day</span>
 					{/if}
 				</div>
 				<div class="rateLimits">
 					<span class="rateLimit">
 						{#if timeSelection === 'weekly'}
-							{tier.rateLimit * 7 > 1000 ? `${(tier.rateLimit * 7 / 1000).toLocaleString(undefined, { maximumFractionDigits: 0 })}k` : (tier.rateLimit * 7).toLocaleString(undefined, { maximumFractionDigits: 0 })} requests
+							{tier.dailyRateLimit * 7 > 1000 ? `${(tier.dailyRateLimit * 7 / 1000).toLocaleString(undefined, { maximumFractionDigits: 0 })}k` : (tier.dailyRateLimit * 7).toLocaleString(undefined, { maximumFractionDigits: 0 })} requests
 						{:else if timeSelection === 'monthly'}
-							{(tier.rateLimit * 365 / 12 / 1000).toLocaleString(undefined, { maximumFractionDigits: 0 })}k requests
+							{(tier.dailyRateLimit * 365 / 12 / 1000).toLocaleString(undefined, { maximumFractionDigits: 0 })}k requests
 						{/if}
 					</span>
-					<span class="small">{tier.rateLimit} /day</span>
+					<span class="small">{tier.dailyRateLimit} /day</span>
 				</div>
 			</div>
 		{/each}
