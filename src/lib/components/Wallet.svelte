@@ -10,12 +10,12 @@
   import type { Chain, Address, ENSDomain } from 'weaverfi/dist/types';
 
   // Initializations:
-  export let provider: ethers.providers.JsonRpcProvider | undefined = undefined;
   export let signer: ethers.providers.JsonRpcSigner | undefined = undefined;
   export let chainID: number | undefined = undefined;
   export let chain: Chain | undefined = undefined;
   export let address: Address | undefined = undefined;
   export let ens: ENSDomain | undefined = undefined;
+  let chainName: string = '';
 
   // Function to check wallet chain ID:
   const checkChainID = async () => {
@@ -23,6 +23,7 @@
       const hexChainID: string = await (window as any).ethereum.request({ method: 'eth_chainId' });
       chainID = parseInt(hexChainID, 16);
       chain = chainID ? getChain(chainID) : undefined;
+      chainName = chain ? weaver[chain].getInfo().name : '';
     } catch {
       console.error('Something went wrong while checking chain ID.');
     }
@@ -51,13 +52,8 @@
   // Function to check wallet signer:
   const checkSigner = async () => {
     try {
-      if(chain) {
-        provider = new ethers.providers.JsonRpcProvider(weaver[chain].getInfo().rpcs[0]);
-        signer = provider.getSigner();
-      } else {
-        provider = undefined;
-        signer = undefined;
-      }
+      const browserProvider = new ethers.providers.Web3Provider((window as any).ethereum, 'any');
+      signer = browserProvider.getSigner();
     } catch {
       console.error('Something went wrong while checking wallet\'s signer.');
     }
@@ -82,6 +78,7 @@
   const connect = async () => {
     await checkChainID();
     await checkAddress();
+    await checkSigner();
   }
 
   onMount(async () => {
@@ -101,7 +98,7 @@
 <div id="wallet">
   {#if address}
     {#if chain}
-      <img src="/chains/{chain}.svg" title="{weaver[chain].getInfo().name}" alt="{chain.toUpperCase()} Chain">
+      <img src="/chains/{chain}.svg" title="{chainName}" alt="{chainName}">
     {/if}
     {#if ens}
       <span title="{address}">{ens}</span>

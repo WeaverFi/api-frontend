@@ -24,7 +24,10 @@
 <!-- #################################################################################################### -->
 
 <div class="keyWrapper">
-	<!-- TODO - top part with arrow for expansion -->
+	<div class="top" on:click={() => isCollapsed = !isCollapsed} on:keydown={() => isCollapsed = !isCollapsed}>
+		<span>TODO</span>
+		<!-- TODO - top part with arrow for expansion -->
+	</div>
 	{#if !isCollapsed}
 		<!-- TODO - display key info -->
 		<span>Chain: {key.chain}</span>

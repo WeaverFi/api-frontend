@@ -23,10 +23,11 @@
 	<div class="tiers">
 		{#each apiTiers as tier}
 			<div class="tier">
+				<span class="name">{tier.name}</span>
 				<div class="prices">
 					<span class="price">
 						{#if tier.monthlyPrice === 0}
-							Free
+							-
 						{:else if timeSelection === 'weekly'}
 							${(tier.monthlyPrice * 12 / 52).toLocaleString(undefined, { maximumFractionDigits: 2 })}
 						{:else if timeSelection === 'monthly'}
@@ -113,9 +114,13 @@
 		gap: .2em;
 	}
 
-	span.price {
+	span.name {
 		font-size: 1.2em;
 		font-weight: bold;
+	}
+
+	span.price {
+		font-size: 1.2em;
 	}
 
 	.small {

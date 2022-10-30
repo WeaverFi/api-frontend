@@ -7,20 +7,26 @@ import weaver from 'weaverfi';
 import type { KeyInfo } from '3pi/dist/types';
 import type { Chain, Address } from 'weaverfi/dist/types';
 
+// API Tier Interface:
+interface Tier {
+  name: string
+  dailyRateLimit: number
+  monthlyPrice: number
+  weiPricePerSecond: number
+}
+
 // 3PI Contract Addresses:
 export const contractAddresses: Partial<Record<Chain, Address>> = {
-  // <TODO> add contract addresses
+  mumbai: '0xF50D1cAF40E1dE56198F262ACA4A3745De0A88dC' // <TODO> REMOVE
 }
 
 // 3PI Price Tiers:
-export const apiTiers: { dailyRateLimit: number, monthlyPrice: number, weiPricePerSecond: number }[] = [
-  { dailyRateLimit: 50, monthlyPrice: 0, weiPricePerSecond: 0 },
-  { dailyRateLimit: 500, monthlyPrice: 10, weiPricePerSecond: 3_805_175_038_052 },
-  { dailyRateLimit: 1500, monthlyPrice: 25, weiPricePerSecond: 9_512_937_595_130 },
-  { dailyRateLimit: 4000, monthlyPrice: 50, weiPricePerSecond: 19_025_875_190_259 }
+export const apiTiers: Tier[] = [
+  { name: 'Free', dailyRateLimit: 50, monthlyPrice: 0, weiPricePerSecond: 0 },
+  { name: 'Crawler', dailyRateLimit: 500, monthlyPrice: 10, weiPricePerSecond: 380517503805 }, // <TODO> input appropriate prices in USDC from actual contract
+  { name: 'Web Spinner', dailyRateLimit: 1500, monthlyPrice: 25, weiPricePerSecond: 951293759513 }, // <TODO> input appropriate prices in USDC from actual contract
+  { name: 'Hunter', dailyRateLimit: 4000, monthlyPrice: 50, weiPricePerSecond: 1902587519025 } // <TODO> input appropriate prices in USDC from actual contract
 ];
-
-// <TODO> make sure the wei prices above match the ones in the contract exactly
 
 /* ========================================================================================================================================================================= */
 
@@ -42,6 +48,8 @@ export const getChain = (chainID: number): Chain | undefined => {
     return 'op';
   } else if(chainID === 42161) {
     return 'arb';
+  } else if(chainID === 80001) { // <TODO> REMOVE
+    return 'mumbai';
   } else {
     return undefined;
   }

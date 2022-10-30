@@ -4,18 +4,11 @@
 	import { ethers } from 'ethers';
 	import { apiTiers, initKeyManager } from '$lib/functions';
 	import weaver from 'weaverfi';
+	import ChainSelector from '$lib/components/ChainSelector.svelte';
 
 	// Type Imports:
   import type { Token } from '3pi/dist/types';
 	import type { Chain, Address } from 'weaverfi/dist/types';
-
-	// New Key Info Type:
-	interface NewKeyInfo {
-		chain: Chain
-		duration: number
-		tierID: number
-		apiKey?: string
-	}
 
 	// Activation Cost Type:
 	interface ActivationCost {
@@ -28,41 +21,47 @@
 	export let address: Address | undefined;
   export let signer: ethers.providers.JsonRpcSigner | undefined;
 	const secondsInAMonth: number = 2_628_000;
-	const newKeyInfo: NewKeyInfo = { chain: 'op', duration: secondsInAMonth, tierID: 1 };
 	const activationCost: ActivationCost = { wei: undefined, tokens: undefined };
 	let token: Token | undefined = undefined;
 	let isCollapsed: boolean = true;
+	let balance: number = 0;
 	let allowance: number = 0;
 	let infiniteApproval: boolean = false;
 	let approvalInProgress: boolean = false;
 	let activationInProgress: boolean = false;
 
-	// Reactive Key Manager Info:
-	$: keyManager = initKeyManager(newKeyInfo.chain);
-	$: keyManager, fetchToken();
+	 // <TODO> Input actual key defaults
+	// New Key Info:
+	let keyChain: Chain = 'mumbai';
+	let keyDuration: number = Math.floor(secondsInAMonth / 4);
+	let keyTierID: number = 1;
+	let apiKeyGenerated: string | undefined = undefined;
 
-	// Reactive Allowance:
+	// Reactive Key Manager Info:
+	$: keyManager = initKeyManager(keyChain);
+	$: keyManager, fetchToken();
+	$: keyManager, address, fetchBalance();
 	$: keyManager, address, fetchAllowance();
 
 	// Reactive Activation Cost:
-	$: newKeyInfo.duration, newKeyInfo.tierID, calcActivationCost();
+	$: token, calcActivationCost(keyDuration, keyTierID);
 
 	// Function to create and activate new key:
 	const createNewKey = async () => {
 		if(keyManager && signer) {
 			activationInProgress = true;
-			newKeyInfo.apiKey = keyManager.generateNewKey();
-			const keyHash = keyManager.getPublicHash(newKeyInfo.apiKey);
-			await keyManager.activateKey(keyHash, newKeyInfo.duration, newKeyInfo.tierID, signer);
+			apiKeyGenerated = keyManager.generateNewKey();
+			const keyHash = keyManager.getPublicHash(apiKeyGenerated);
+			await keyManager.activateKey(keyHash, keyDuration, keyTierID, signer);
 			activationInProgress = false;
 		}
 	}
 
 	// Function to calculate new key activation cost:
-	const calcActivationCost = async () => {
-		if(keyManager && token) {
-			activationCost.wei = ethers.BigNumber.from(apiTiers[newKeyInfo.tierID].weiPricePerSecond).mul(newKeyInfo.duration);
-			activationCost.tokens = activationCost.wei.div(10 ** token.decimals).toNumber();
+	const calcActivationCost = async (duration: number, tierID: number) => {
+		if(token) {
+			activationCost.wei = ethers.BigNumber.from(apiTiers[tierID].weiPricePerSecond).mul(duration);
+			activationCost.tokens = parseFloat(ethers.utils.formatEther(activationCost.wei));
 		} else {
 			activationCost.wei = undefined;
 			activationCost.tokens = undefined;
@@ -72,6 +71,13 @@
 	// Function to fetch token being used in the key manager contract:
 	const fetchToken = async () => {
 		token = keyManager ? await keyManager.contractToken : undefined;
+	}
+
+	// Function to fetch current wallet balance:
+	const fetchBalance = async () => {
+		if(keyManager && address) {
+			balance = await keyManager.getWalletBalance(address);
+		}
 	}
 
 	// Function to fetch current wallet allowance value:
@@ -101,17 +107,23 @@
 <div class="newKeyWrapper">
 	{#if isCollapsed}
 		<span class="newKey" on:click={() => isCollapsed = !isCollapsed} on:keydown={() => isCollapsed = !isCollapsed}>
-			<strong>New Key</strong>
+			<strong>New API Key</strong>
 			<i class="icofont-plus" />
 		</span>
 	{:else}
 		<div class="newKeySettings">
 			<i class="icofont-ui-close close" on:click={() => isCollapsed = !isCollapsed} on:keydown={() => isCollapsed = !isCollapsed} />
-			<span>Chain: {newKeyInfo.chain}</span>
-			<span>Duration: {newKeyInfo.duration}</span>
-			<span>Tier ID: {newKeyInfo.tierID}</span>
-			{#if keyManager && token && chain && activationCost.tokens}
-				{#if chain === newKeyInfo.chain}
+			<h3>New API Key Settings</h3>
+			<!-- TODO - need tooltip next to chain to explain that this is just for payment, API is still usable for data on all chains -->
+			<span class="chainSelection"><strong>Chain:</strong> <ChainSelector bind:selectedChain={keyChain} /></span>
+			<span>Duration: {keyDuration}</span>
+			<span>Tier ID: {keyTierID}</span>
+			<span>Balance: {balance} {token?.symbol}</span>
+			<span>Allowance: {allowance} {token?.symbol}</span>
+			<span>Activation Cost (Wei): {activationCost.wei}</span>
+			<span>Activation Cost (Tokens): {activationCost.tokens?.toLocaleString(undefined, { maximumFractionDigits: 2 })}</span>
+			{#if keyManager && token && chain && activationCost.tokens !== undefined}
+				{#if chain === keyChain}
 					{#if allowance >= activationCost.tokens}
 						<span class="createNewKey" on:click={createNewKey} on:keydown={createNewKey}>Create New Key</span>
 					{:else}
@@ -120,7 +132,7 @@
 						<span class="approve" on:click={updateApproval} on:keydown={updateApproval}>Approve {token.symbol}</span>
 					{/if}
 				{:else}
-					<span>Please connect to the {weaver[chain].getInfo().name} network.</span>
+					<span>Please connect to the {weaver[keyChain].getInfo().name} network.</span>
 				{/if}
 			{/if}
 		</div>
@@ -164,6 +176,12 @@
 		position: absolute;
 		inset: 1em 1em auto auto;
 		cursor: pointer;
+	}
+
+	span.chainSelection {
+		display: flex;
+		align-items: center;
+		gap: 1em;
 	}
 
 	span.createNewKey {

@@ -1,12 +1,12 @@
 <script lang="ts">
 
 	// Imports:
-	import Keys from '$lib/Keys.svelte';
-	import Info from '$lib/Info.svelte';
-	import Navbar from '$lib/Navbar.svelte';
-	import Header from '$lib/Header.svelte';
-	import Footer from '$lib/Footer.svelte';
-	import Pricing from '$lib/Pricing.svelte';
+	import Keys from '$lib/sections/Keys.svelte';
+	import Info from '$lib/sections/Info.svelte';
+	import Navbar from '$lib/sections/Navbar.svelte';
+	import Header from '$lib/sections/Header.svelte';
+	import Footer from '$lib/sections/Footer.svelte';
+	import Pricing from '$lib/sections/Pricing.svelte';
 
 	// Links:
 	const links = {

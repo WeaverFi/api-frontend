@@ -1,15 +1,3 @@
-<script lang="ts">
-
-	// Imports:
-	// :3
-
-	// Initializations:
-	// :3
-
-</script>
-
-<!-- #################################################################################################### -->
-
 <section>
 	<h2>About our API keys</h2>
 	<p>When purchasing an API key, your deposited balance will be continuously spent according to your tier of choice. You can withdraw your unspent balances at any time.</p>

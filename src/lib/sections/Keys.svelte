@@ -2,9 +2,9 @@
 
 	// Imports:
 	import { getKeys } from '$lib/functions';
-	import Key from '$lib/Key.svelte';
-	import NewKey from '$lib/NewKey.svelte';
-	import Wallet from '$lib/Wallet.svelte';
+	import Key from '$lib/components/Key.svelte';
+	import NewKey from '$lib/components/NewKey.svelte';
+	import Wallet from '$lib/components/Wallet.svelte';
 
 	// Type Imports:
 	import type { ethers } from 'ethers';
@@ -12,7 +12,6 @@
 	import type { Chain, Address } from 'weaverfi/dist/types';
 
 	// Initializations:
-	let provider: ethers.providers.JsonRpcProvider | undefined;
   let signer: ethers.providers.JsonRpcSigner | undefined;
   let chain: Chain | undefined;
 	let address: Address | undefined;
@@ -29,6 +28,9 @@
 		fetching = false;
 	}
 
+	// <TODO> need to show loading animation while fetching keys
+	// <TODO> need way to hide expired keys
+
 </script>
 
 <!-- #################################################################################################### -->
@@ -38,7 +40,7 @@
 	<!-- Top Bar -->
 	<div class="top">
 		<h2>Manage your keys</h2>
-		<Wallet bind:provider bind:signer bind:chain bind:address />
+		<Wallet bind:signer bind:chain bind:address />
 	</div>
 
 	<!-- Keys Display -->
