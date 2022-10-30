@@ -9,6 +9,7 @@ import type { Chain, Address } from 'weaverfi/dist/types';
 
 // API Tier Interface:
 interface Tier {
+  id: number
   name: string
   dailyRateLimit: number
   monthlyPrice: number
@@ -22,10 +23,10 @@ export const contractAddresses: Partial<Record<Chain, Address>> = {
 
 // 3PI Price Tiers:
 export const apiTiers: Tier[] = [
-  { name: 'Free', dailyRateLimit: 50, monthlyPrice: 0, weiPricePerSecond: 0 },
-  { name: 'Crawler', dailyRateLimit: 500, monthlyPrice: 10, weiPricePerSecond: 380517503805 }, // <TODO> input appropriate prices in USDC from actual contract
-  { name: 'Web Spinner', dailyRateLimit: 1500, monthlyPrice: 25, weiPricePerSecond: 951293759513 }, // <TODO> input appropriate prices in USDC from actual contract
-  { name: 'Hunter', dailyRateLimit: 4000, monthlyPrice: 50, weiPricePerSecond: 1902587519025 } // <TODO> input appropriate prices in USDC from actual contract
+  { id: 0, name: 'Free', dailyRateLimit: 50, monthlyPrice: 0, weiPricePerSecond: 0 },
+  { id: 1, name: 'Crawler', dailyRateLimit: 500, monthlyPrice: 10, weiPricePerSecond: 3_805_175_038_052 }, // <TODO> input appropriate prices in USDC from actual contract
+  { id: 2, name: 'Weaver', dailyRateLimit: 1500, monthlyPrice: 25, weiPricePerSecond: 9_512_937_595_130 }, // <TODO> input appropriate prices in USDC from actual contract
+  { id: 3, name: 'Hunter', dailyRateLimit: 4000, monthlyPrice: 50, weiPricePerSecond: 19_025_875_190_259 } // <TODO> input appropriate prices in USDC from actual contract
 ];
 
 /* ========================================================================================================================================================================= */

@@ -4,7 +4,9 @@
 	import { ethers } from 'ethers';
 	import { apiTiers, initKeyManager } from '$lib/functions';
 	import weaver from 'weaverfi';
+	import TierSelector from '$lib/components/TierSelector.svelte';
 	import ChainSelector from '$lib/components/ChainSelector.svelte';
+	import DurationSelector from '$lib/components/DurationSelector.svelte';
 
 	// Type Imports:
   import type { Token } from '3pi/dist/types';
@@ -54,6 +56,7 @@
 			const keyHash = keyManager.getPublicHash(apiKeyGenerated);
 			await keyManager.activateKey(keyHash, keyDuration, keyTierID, signer);
 			activationInProgress = false;
+			// <TODO> need to refresh key list when complete
 		}
 	}
 
@@ -97,8 +100,11 @@
 				await keyManager.approve(activationCost.wei, signer);
 			}
 			approvalInProgress = false;
+			fetchAllowance();
 		}
 	}
+
+	// <TODO> need to display generated api key when complete
 
 </script>
 
@@ -114,26 +120,41 @@
 		<div class="newKeySettings">
 			<i class="icofont-ui-close close" on:click={() => isCollapsed = !isCollapsed} on:keydown={() => isCollapsed = !isCollapsed} />
 			<h3>New API Key Settings</h3>
-			<!-- TODO - need tooltip next to chain to explain that this is just for payment, API is still usable for data on all chains -->
-			<span class="chainSelection"><strong>Chain:</strong> <ChainSelector bind:selectedChain={keyChain} /></span>
-			<span>Duration: {keyDuration}</span>
-			<span>Tier ID: {keyTierID}</span>
-			<span>Balance: {balance} {token?.symbol}</span>
-			<span>Allowance: {allowance} {token?.symbol}</span>
-			<span>Activation Cost (Wei): {activationCost.wei}</span>
-			<span>Activation Cost (Tokens): {activationCost.tokens?.toLocaleString(undefined, { maximumFractionDigits: 2 })}</span>
+			<hr>
+			<div class="selections">
+				<!-- TODO - need tooltip next to chain to explain that this is just for payment, API is still usable for data on all chains -->
+				<span><strong>Chain:</strong> <ChainSelector bind:selectedChain={keyChain} /></span>
+				<!-- TODO - need tooltip next to tier to explain what it defines (cost/rate limit) -->
+				<span><strong>Tier:</strong> <TierSelector bind:selectedTier={keyTierID} /></span>
+				<!-- TODO - need tooltip next to chain to explain that you can extend this duration at any time -->
+				<span><strong>Duration:</strong> <DurationSelector bind:selectedDuration={keyDuration} /></span>
+			</div>
+			<hr>
 			{#if keyManager && token && chain && activationCost.tokens !== undefined}
-				{#if chain === keyChain}
-					{#if allowance >= activationCost.tokens}
-						<span class="createNewKey" on:click={createNewKey} on:keydown={createNewKey}>Create New Key</span>
+				<div class="results">
+					<span class="cost"><strong>Key Activation Cost:</strong> {activationCost.tokens?.toLocaleString(undefined, { maximumFractionDigits: 2 })} {token.symbol} <img src="{weaver[keyChain].getTokenLogo(token.symbol)}" alt="{token.symbol}"></span>
+					{#if chain === keyChain}
+						{#if activationCost.tokens > balance}
+							<span class="error">Insufficient {token.symbol} balance in wallet.</span>
+						{:else if keyDuration <= 0}
+							<span class="error">Invalid duration selected.</span>
+						{:else if allowance >= activationCost.tokens}
+							<span class="createNewKey" on:click={createNewKey} on:keydown={createNewKey}>Create New Key</span>
+							<!-- TODO - show in progress -->
+						{:else}
+							<span class="approvalInfo">
+								<input type="checkbox" id="infiniteApproval" bind:checked={infiniteApproval} >
+								<label class="enableInfiniteApproval" for="infiniteApproval">Infinite Approval? <i class="icofont-ui-{infiniteApproval ? 'check' : 'close'}" /></label>
+								<span class="approve" on:click={updateApproval} on:keydown={updateApproval}>Approve {token.symbol}</span>
+								<!-- TODO - show in progress -->
+							</span>
+						{/if}
 					{:else}
-						<input type="checkbox" id="infiniteApproval" bind:checked={infiniteApproval} >
-						<label for="infiniteApproval">Infinite Approval? <i class="icofont-ui-{infiniteApproval ? 'check' : 'close'}" /></label>
-						<span class="approve" on:click={updateApproval} on:keydown={updateApproval}>Approve {token.symbol}</span>
+						<span class="error">Please connect to the {weaver[keyChain].getInfo().name} network.</span>
 					{/if}
-				{:else}
-					<span>Please connect to the {weaver[keyChain].getInfo().name} network.</span>
-				{/if}
+				</div>
+			{:else}
+				<!-- TODO - loading details -->
 			{/if}
 		</div>
 	{/if}
@@ -172,25 +193,81 @@
 		text-align: left;
 	}
 
+	h3 {
+		padding: .5em 0;
+	}
+
 	div.newKeySettings > i.close {
 		position: absolute;
 		inset: 1em 1em auto auto;
 		cursor: pointer;
 	}
 
-	span.chainSelection {
+	hr {
+		border: none;
+		border-top: 2px solid var(--secondaryColor);
+	}
+
+	div.selections {
+		display: flex;
+		gap: 2em;
+	}
+
+	div.selections > span {
 		display: flex;
 		align-items: center;
 		gap: 1em;
 	}
 
-	span.createNewKey {
-		margin-left: auto;
+	div.results {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+	}
+
+	span.cost {
+		display: flex;
+		align-items: center;
+		gap: .2em;
+		padding: 1em 0;
+	}
+
+	span.cost > strong {
+		margin-right: 1em;
+	}
+
+	span.cost > img {
+		height: 1.2em;
+		width: 1.2em;
+	}
+
+	span.createNewKey, span.approve {
 		padding: .2em 1em;
 		color: var(--fontColor);
 		background-color: var(--secondaryColor);
 		border-radius: .5em;
 		cursor: pointer;
+	}
+
+	span.error {
+		color: darkred;
+	}
+
+	span.approvalInfo {
+		display: flex;
+		align-items: center;
+		gap: 1em;
+	}
+
+	input#infiniteApproval {
+		display: none;
+	}
+
+	label.enableInfiniteApproval {
+		margin-top: .2em;
+		font-size: .8em;
+		cursor: pointer;
+		user-select: none;
 	}
 	
 </style>
