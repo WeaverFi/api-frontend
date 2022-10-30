@@ -19,9 +19,9 @@
 	}
 
 	// Initializations:
-  export let chain: Chain | undefined;
-	export let address: Address | undefined;
-  export let signer: ethers.providers.JsonRpcSigner | undefined;
+  export let chain: Chain;
+	export let address: Address;
+  export let signer: ethers.providers.JsonRpcSigner;
 	const secondsInAMonth: number = 2_628_000;
 	const activationCost: ActivationCost = { wei: undefined, tokens: undefined };
 	let token: Token | undefined = undefined;
@@ -50,7 +50,7 @@
 
 	// Function to create and activate new key:
 	const createNewKey = async () => {
-		if(keyManager && signer) {
+		if(keyManager) {
 			activationInProgress = true;
 			apiKeyGenerated = keyManager.generateNewKey();
 			const keyHash = keyManager.getPublicHash(apiKeyGenerated);
@@ -64,7 +64,7 @@
 	const calcActivationCost = async (duration: number, tierID: number) => {
 		if(token) {
 			activationCost.wei = ethers.BigNumber.from(apiTiers[tierID].weiPricePerSecond).mul(duration);
-			activationCost.tokens = parseFloat(ethers.utils.formatEther(activationCost.wei));
+			activationCost.tokens = parseFloat(ethers.utils.formatUnits(activationCost.wei, token.decimals));
 		} else {
 			activationCost.wei = undefined;
 			activationCost.tokens = undefined;
@@ -78,21 +78,21 @@
 
 	// Function to fetch current wallet balance:
 	const fetchBalance = async () => {
-		if(keyManager && address) {
+		if(keyManager) {
 			balance = await keyManager.getWalletBalance(address);
 		}
 	}
 
 	// Function to fetch current wallet allowance value:
 	const fetchAllowance = async () => {
-		if(keyManager && address) {
+		if(keyManager) {
 			allowance = await keyManager.getWalletAllowance(address);
 		}
 	}
 
 	// Function to update approval amount:
 	const updateApproval = async () => {
-		if(keyManager && signer && activationCost.wei) {
+		if(keyManager && activationCost.wei) {
 			approvalInProgress = true;
 			if(infiniteApproval) {
 				await keyManager.approve(ethers.constants.MaxUint256, signer);
@@ -130,7 +130,7 @@
 				<span><strong>Duration:</strong> <DurationSelector bind:selectedDuration={keyDuration} /></span>
 			</div>
 			<hr>
-			{#if keyManager && token && chain && activationCost.tokens !== undefined}
+			{#if keyManager && token && activationCost.tokens !== undefined}
 				<div class="results">
 					<span class="cost"><strong>Key Activation Cost:</strong> {activationCost.tokens?.toLocaleString(undefined, { maximumFractionDigits: 2 })} {token.symbol} <img src="{weaver[keyChain].getTokenLogo(token.symbol)}" alt="{token.symbol}"></span>
 					{#if chain === keyChain}
@@ -191,10 +191,6 @@
 		gap: 1em;
 		padding: 1em;
 		text-align: left;
-	}
-
-	h3 {
-		padding: .5em 0;
 	}
 
 	div.newKeySettings > i.close {

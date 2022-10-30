@@ -9,13 +9,13 @@
 	// Type Imports:
 	import type { ethers } from 'ethers';
 	import type { KeyInfo } from '3pi/dist/types';
-	import type { Chain, Address } from 'weaverfi/dist/types';
+	import type { Chain, Address, Hash } from 'weaverfi/dist/types';
 
 	// Initializations:
   let signer: ethers.providers.JsonRpcSigner | undefined;
   let chain: Chain | undefined;
 	let address: Address | undefined;
-	let keys: (KeyInfo & { chain: Chain })[] = [];
+	let keys: (KeyInfo & { chain: Chain, hash: Hash })[] = [];
 	let fetching: boolean = false;
 
 	// Reactive Updates:
@@ -28,8 +28,9 @@
 		fetching = false;
 	}
 
+	// <TODO> display "you have no keys" after loading if user has no keys
 	// <TODO> need to show loading animation while fetching keys
-	// <TODO> need way to hide expired keys
+	// <TODO> need to hide expired keys
 
 </script>
 
@@ -46,10 +47,12 @@
 	<!-- Keys Display -->
 	<div class="keys">
 		{#if address}
-			{#each keys as key}
-				<Key {key} {chain} {address} {signer} />
-			{/each}
-			<NewKey {chain} {address} {signer} />
+			{#if chain && signer}
+				{#each keys as key}
+					<Key {key} {chain} {address} {signer} />
+				{/each}
+				<NewKey {chain} {address} {signer} />
+			{/if}
 		{:else}
 			<span class="info">Connect your wallet to check on and manage your keys!</span>
 		{/if}
@@ -75,7 +78,6 @@
 		align-items: center;
 		gap: 1em;
 		margin-top: 2em;
-		text-align: center;
 	}
 
 	span.info {

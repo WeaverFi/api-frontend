@@ -77,8 +77,8 @@
   // Function to connect to wallet:
   const connect = async () => {
     await checkChainID();
-    await checkAddress();
     await checkSigner();
+    await checkAddress();
   }
 
   onMount(async () => {
@@ -86,7 +86,7 @@
     // Event handlers:
     if(typeof (window as any).ethereum !== 'undefined') {
       (window as any).ethereum.on('chainChanged', async () => { await checkChainID(); await checkSigner(); });
-      (window as any).ethereum.on('accountsChanged', async () => { await checkAddress(); await checkSigner(); });
+      (window as any).ethereum.on('accountsChanged', async () => { await checkSigner(); await checkAddress(); });
     }
 
   });

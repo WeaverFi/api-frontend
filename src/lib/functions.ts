@@ -5,7 +5,7 @@ import weaver from 'weaverfi';
 
 // Type Imports:
 import type { KeyInfo } from '3pi/dist/types';
-import type { Chain, Address } from 'weaverfi/dist/types';
+import type { Chain, Address, Hash } from 'weaverfi/dist/types';
 
 // API Tier Interface:
 interface Tier {
@@ -60,16 +60,16 @@ export const getChain = (chainID: number): Chain | undefined => {
 
 // Function to get an address's keys:
 export const getKeys = async (address: Address | undefined) => {
-  const keys: (KeyInfo & { chain: Chain })[] = [];
+  const keys: (KeyInfo & { chain: Chain, hash: Hash })[] = [];
   if(address) {
     for(const stringChain of Object.keys(contractAddresses)) {
       const chain = stringChain as Chain;
       const keyManager = initKeyManager(chain);
       if(keyManager) {
         const userKeys = await keyManager.getUserKeys(address);
-        for(const keyHash of userKeys) {
-          const keyInfo = await keyManager.getKeyInfo(keyHash);
-          keys.push({ ...keyInfo, chain });
+        for(const hash of userKeys) {
+          const keyInfo = await keyManager.getKeyInfo(hash);
+          keys.push({ ...keyInfo, chain, hash });
         }
       }
     }
