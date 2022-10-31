@@ -1,7 +1,7 @@
 <script lang="ts">
 
 	// Imports:
-	import { slide } from 'svelte/transition';
+	import { fade, slide } from 'svelte/transition';
 	import { apiTiers, initKeyManager } from '$lib/functions';
 	import weaver from 'weaverfi';
 
@@ -15,6 +15,7 @@
   export let chain: Chain;
 	export let address: Address;
   export let signer: ethers.providers.JsonRpcSigner;
+	export let displayExpired: boolean = true;
 	const timeNow = Date.now() / 1000;
 	const secondsInAMonth: number = 2_628_000;
 	let token: Token | undefined = undefined;
@@ -57,30 +58,32 @@
 
 <!-- #################################################################################################### -->
 
-<div class="keyWrapper" class:active={keyActive}>
-	<div class="top" on:click={() => isCollapsed = !isCollapsed} on:keydown={() => isCollapsed = !isCollapsed}>
-		<img src="/chains/{key.chain}.svg" alt="{weaver[key.chain].getInfo().name}">
-		<span class="hash" title="{key.hash}">{key.hash.slice(0, 6)}...{key.hash.slice(-4)}</span>
-		<span class="status">{keyActive ? 'Active' : 'Inactive'}</span>
-		<i class="icofont-rounded-{isCollapsed ? 'down' : 'up'}" />
-	</div>
-	{#if !isCollapsed}
-		<div class="keyDetails" transition:slide|local>
-			<hr>
-			<span>Chain: {key.chain}</span>
-			<!-- TODO - add more tier info (cost, rate limit, etc.) -->
-			<span>Tier: {key.tierId}</span>
-			<!-- TODO - add tooltip to let users know that if a key expires and is re-activated, start time will be updated (indicates consecutive active time) -->
-			<span>Start: {key.startTime}</span>
-			<span>Expiry: {key.expiryTime}</span>
-			{#if token && keyActive}
-				<span>Remaining Balance: {remainingBalance.toLocaleString(undefined, { maximumFractionDigits: 2 })} {token.symbol}</span>
-				<!-- TODO - display when loading remaining balance -->
-			{/if}
+{#if displayExpired || keyActive}
+	<div class="keyWrapper" class:active={keyActive} transition:fade|local={{ duration: 200 }}>
+		<div class="top" on:click={() => isCollapsed = !isCollapsed} on:keydown={() => isCollapsed = !isCollapsed}>
+			<img src="/chains/{key.chain}.svg" alt="{weaver[key.chain].getInfo().name}">
+			<span class="hash" title="{key.hash}">{key.hash.slice(0, 6)}...{key.hash.slice(-4)}</span>
+			<span class="status">{keyActive ? 'Active' : 'Inactive'}</span>
+			<i class="icofont-rounded-{isCollapsed ? 'down' : 'up'}" />
 		</div>
-		<!-- TODO - let user extend or deactivate key -->
-	{/if}
-</div>
+		{#if !isCollapsed}
+			<div class="keyDetails" transition:slide|local>
+				<hr>
+				<span>Chain: {key.chain}</span>
+				<!-- TODO - add more tier info (cost, rate limit, etc.) -->
+				<span>Tier: {key.tierId}</span>
+				<!-- TODO - add tooltip to let users know that if a key expires and is re-activated, start time will be updated (indicates consecutive active time) -->
+				<span>Start: {key.startTime}</span>
+				<span>Expiry: {key.expiryTime}</span>
+				{#if token && keyActive}
+					<span>Remaining Balance: {remainingBalance.toLocaleString(undefined, { maximumFractionDigits: 2 })} {token.symbol}</span>
+					<!-- TODO - display when loading remaining balance -->
+				{/if}
+			</div>
+			<!-- TODO - let user extend or deactivate key -->
+		{/if}
+	</div>
+{/if}
 
 <!-- #################################################################################################### -->
 

@@ -49,6 +49,11 @@ section {
 	overflow: hidden;
 }
 
+@keyframes spin {
+	from { transform: rotate(0deg); }
+	to { transform: rotate(360deg); }
+}
+
 @media screen and (min-width: 2560px) {
 	nav, footer, section {
 		font-size: 1.2em;
