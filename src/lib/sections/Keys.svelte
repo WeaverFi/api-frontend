@@ -50,7 +50,7 @@
 				{:else if fetching}
 					<span class="loading">Loading keys...</span>
 				{/if}
-				{#each keys as key}
+				{#each [...keys].reverse() as key}
 					<Key {key} {chain} {address} {signer} {displayExpired} />
 				{/each}
 				<NewKey {chain} {address} {signer} />
