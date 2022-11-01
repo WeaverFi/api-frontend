@@ -9,7 +9,6 @@
 
 	// Initializations:
 	export let key: ExtendedKeyInfo;
-	export let keyActive: boolean;
 	export let token: Token;
 	export let remainingBalance: number;
 	export let fetchingBalance: boolean;
@@ -21,17 +20,15 @@
 <!-- #################################################################################################### -->
 
 <div class="keyActions">
-	{#if keyActive}
-		{#if fetchingBalance}
-			<span class="loading">Loading remaining {token.symbol} balance...</span>
-		{:else}
-			<span><strong>Remaining Balance:</strong></span>
-			<span class="remainingBalance">{remainingBalance.toLocaleString(undefined, { maximumFractionDigits: 2 })} {token.symbol} <img src="{weaver[key.chain].getTokenLogo(token.symbol)}" alt="{token.symbol}"></span>
-			<div class="buttons">
-				<span class="extendKey" on:click={() => onClickExtendKey()} on:keydown={() => onClickExtendKey()}>Extend</span>
-				<span class="withdraw" on:click={() => onClickWithdraw()} on:keydown={() => onClickWithdraw()}>Withdraw</span>
-			</div>
-		{/if}
+	{#if fetchingBalance}
+		<span class="loading">Loading remaining {token.symbol} balance...</span>
+	{:else}
+		<span><strong>Remaining Balance:</strong></span>
+		<span class="remainingBalance">{remainingBalance.toLocaleString(undefined, { maximumFractionDigits: 2 })} {token.symbol} <img src="{weaver[key.chain].getTokenLogo(token.symbol)}" alt="{token.symbol}"></span>
+		<div class="buttons">
+			<span class="extendKey" on:click={() => onClickExtendKey()} on:keydown={() => onClickExtendKey()}>Extend</span>
+			<span class="withdraw" on:click={() => onClickWithdraw()} on:keydown={() => onClickWithdraw()}>Withdraw</span>
+		</div>
 	{/if}
 </div>
 

@@ -79,12 +79,12 @@
 					{/if}
 				{:else if withdrawing}
 					{#if keyManager && token}
-						<Withdraw {key} {chain} {address} {signer} {keyManager} {token} onReturn={() => withdrawing = false} />
+						<Withdraw {key} {chain} {signer} {keyManager} {token} onReturn={() => withdrawing = false} />
 					{/if}
 				{:else}
 					<KeyDetails {key} {keyActive} onClickReActivate={() => extendingKey = true} />
-					{#if token}
-						<KeyActions {key} {keyActive} {token} {remainingBalance} {fetchingBalance} onClickExtendKey={() => extendingKey = true} onClickWithdraw={() => withdrawing = true} />
+					{#if token && keyActive}
+						<KeyActions {key} {token} {remainingBalance} {fetchingBalance} onClickExtendKey={() => extendingKey = true} onClickWithdraw={() => withdrawing = true} />
 					{/if}
 				{/if}
 			</div>
