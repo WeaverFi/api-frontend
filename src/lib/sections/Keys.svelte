@@ -33,7 +33,7 @@
 
 <!-- #################################################################################################### -->
 
-<section>
+<section id="keys">
 
 	<!-- Top Bar -->
 	<div class="top">
@@ -48,7 +48,7 @@
 				{#if !fetching && keys.length === 0}
 					<span class="small muted">You don't seem to have activated any API keys yet.</span>
 				{:else if fetching}
-					<span class="loading">Loading Keys...</span>
+					<span class="loading">Loading keys...</span>
 				{/if}
 				{#each keys as key}
 					<Key {key} {chain} {address} {signer} {displayExpired} />
@@ -56,7 +56,7 @@
 				<NewKey {chain} {address} {signer} />
 				{#if !fetching && keys.length > 0}
 					<input type="checkbox" id="displayExpiredKeys" bind:checked={displayExpired} >
-					<label class="toggleDisplayedExpiredKeys small" class:muted={!displayExpired} for="displayExpiredKeys">{displayExpired ? 'Displaying' : 'Hiding'} expired keys <i class="icofont-eye{displayExpired ? '' : '-blocked'}" /></label>
+					<label class="toggleDisplayedExpiredKeys small" class:muted={!displayExpired} for="displayExpiredKeys">{displayExpired ? 'Displaying' : 'Hiding'} inactive keys <i class="icofont-eye{displayExpired ? '' : '-blocked'}" /></label>
 				{/if}
 			{/if}
 		{:else}

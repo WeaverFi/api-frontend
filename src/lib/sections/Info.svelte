@@ -1,4 +1,4 @@
-<section>
+<section id="info">
 	<h2>About our API keys</h2>
 	<p>When purchasing an API key, your deposited balance will be continuously spent according to your tier of choice. You can withdraw your unspent balances at any time.</p>
 	<p>During the first 24 hours of activating a new key, your rate limit will linearly increase towards your tier's allowed query limit:</p>

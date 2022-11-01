@@ -16,15 +16,16 @@
 	export let address: Address;
   export let signer: ethers.providers.JsonRpcSigner;
 	export let displayExpired: boolean = true;
-	const timeNow = Date.now() / 1000;
+	const secondsInADay: number = 86_400;
 	const secondsInAMonth: number = 2_628_000;
+	let timeNow = Date.now() / 1000;
 	let token: Token | undefined = undefined;
 	let isCollapsed: boolean = true;
 	let remainingBalance: number = 0;
 	let fetchingBalance: boolean = false;
 
 	// Reactive Key Manager Info:
-	$: keyManager = initKeyManager(chain);
+	$: keyManager = initKeyManager(key.chain);
 	$: keyManager, fetchToken();
 
 	// Reactive Key Status:
@@ -52,7 +53,8 @@
 		}
 	}
 
-	// <TODO> add refresh remaining balance button
+	// <TODO> extend functionality
+	// <TODO> withdraw functionality
 
 </script>
 
@@ -69,18 +71,36 @@
 		{#if !isCollapsed}
 			<div class="keyDetails" transition:slide|local>
 				<hr>
-				<span>Chain: {key.chain}</span>
-				<!-- TODO - add more tier info (cost, rate limit, etc.) -->
-				<span>Tier: {key.tierId}</span>
-				<!-- TODO - add tooltip to let users know that if a key expires and is re-activated, start time will be updated (indicates consecutive active time) -->
-				<span>Start: {key.startTime}</span>
-				<span>Expiry: {key.expiryTime}</span>
-				{#if token && keyActive}
-					<span>Remaining Balance: {remainingBalance.toLocaleString(undefined, { maximumFractionDigits: 2 })} {token.symbol}</span>
-					<!-- TODO - display when loading remaining balance -->
-				{/if}
+				<div class="keyInfo">
+					<span><strong>Chain:</strong> {weaver[key.chain].getInfo().name}</span>
+					<span><strong>Tier:</strong> {apiTiers[key.tierId].name}</span>
+					<span><strong>Daily Rate Limit:</strong> {apiTiers[key.tierId].dailyRateLimit}</span>
+					{#if timeNow < (key.startTime + secondsInADay)}
+						<span class="info">This key was activated less than 24 hours ago, so its rate limit is still ramping up.</span>
+					{/if}
+					<span>Tier Name: {apiTiers[key.tierId].name}</span>
+					<span>Tier Monthly Cost: {apiTiers[key.tierId].monthlyPrice}</span>
+					<span>Tier Daily Rate Limit: {apiTiers[key.tierId].dailyRateLimit}</span>
+					<!-- TODO - add tooltip to let users know that if a key expires and is re-activated, start time will be updated (indicates consecutive active time) -->
+					<span>Start: {key.startTime}</span>
+					<span>Expiry: {key.expiryTime}</span>
+				</div>
+				<div class="keyActions">
+					{#if token && keyActive}
+						{#if fetchingBalance}
+							<span class="loading">Loading remaining {token.symbol} balance...</span>
+						{:else}
+							<span>Remaining Balance:</span>
+							<span>{remainingBalance.toLocaleString(undefined, { maximumFractionDigits: 2 })} {token.symbol}</span>
+							<i class="icofont-refresh clickable" on:click={getRemainingBalance} on:keydown={getRemainingBalance} />
+							<div class="buttons">
+								<span class="extendKey">Extend</span>
+								<span class="deactivate">Withdraw</span>
+							</div>
+						{/if}
+					{/if}
+				</div>
 			</div>
-			<!-- TODO - let user extend or deactivate key -->
 		{/if}
 	</div>
 {/if}
@@ -122,13 +142,34 @@
 
 	div.keyDetails {
 		display: flex;
-		flex-direction: column;
+		flex-wrap: wrap;
 		padding: 0 1em 1em;
 	}
 
+	div.keyDetails > div {
+		flex: 1;
+		display: flex;
+		flex-direction: column;
+		padding-top: 1em;
+	}
+
 	hr {
+		width: 100%;
 		border: none;
 		border-top: 2px solid var(--secondaryColor);
+	}
+
+	div.keyActions {
+		align-items: center;
+	}
+
+	span.info {
+		color: var(--terciaryColor);
+		font-size: .9em;
+	}
+
+	.clickable {
+		cursor: pointer;
 	}
 	
 </style>
