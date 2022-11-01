@@ -2,7 +2,7 @@
 
 	// Imports:
 	import { ethers } from 'ethers';
-	import { apiTiers, initKeyManager } from '$lib/functions';
+	import { initKeyManager, calcCost } from '$lib/functions';
 	import weaver from 'weaverfi';
 	import TierSelector from '$lib/components/TierSelector.svelte';
 	import ChainSelector from '$lib/components/ChainSelector.svelte';
@@ -12,18 +12,11 @@
   import type { Token } from '3pi/dist/types';
 	import type { Chain, Address } from 'weaverfi/dist/types';
 
-	// Activation Cost Type:
-	interface ActivationCost {
-		wei: ethers.BigNumber | undefined
-		tokens: number | undefined
-	}
-
 	// Initializations:
   export let chain: Chain;
 	export let address: Address;
   export let signer: ethers.providers.JsonRpcSigner;
 	const secondsInAMonth: number = 2_628_000;
-	const activationCost: ActivationCost = { wei: undefined, tokens: undefined };
 	let token: Token | undefined = undefined;
 	let isCollapsed: boolean = true;
 	let balance: number = 0;
@@ -35,7 +28,7 @@
 	 // <TODO> Input actual key defaults
 	// New Key Info:
 	let keyChain: Chain = 'mumbai';
-	let keyDuration: number = Math.floor(secondsInAMonth / 4);
+	let keyDuration: number = secondsInAMonth;
 	let keyTierID: number = 1;
 	let apiKeyGenerated: string | undefined = undefined;
 
@@ -46,7 +39,7 @@
 	$: keyManager, address, fetchAllowance();
 
 	// Reactive Activation Cost:
-	$: token, calcActivationCost(keyDuration, keyTierID);
+	$: activationCost = calcCost(token, keyTierID, keyDuration);
 
 	// Function to create and activate new key:
 	const createNewKey = async () => {
@@ -57,17 +50,6 @@
 			await keyManager.activateKey(keyHash, keyDuration, keyTierID, signer);
 			activationInProgress = false;
 			// <TODO> need to refresh key list when complete
-		}
-	}
-
-	// Function to calculate new key activation cost:
-	const calcActivationCost = async (duration: number, tierID: number) => {
-		if(token) {
-			activationCost.wei = ethers.BigNumber.from(apiTiers[tierID].weiPricePerSecond).mul(duration);
-			activationCost.tokens = parseFloat(ethers.utils.formatUnits(activationCost.wei, token.decimals));
-		} else {
-			activationCost.wei = undefined;
-			activationCost.tokens = undefined;
 		}
 	}
 

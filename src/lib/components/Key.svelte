@@ -11,11 +11,12 @@
 	import KeyActions from '$lib/components/KeyActions.svelte';
 
 	// Type Imports:
-	import type { Token, KeyInfo } from '3pi/dist/types';
-	import type { Chain, Address, Hash } from 'weaverfi/dist/types';
+	import type { Token } from '3pi/dist/types';
+	import type { ExtendedKeyInfo } from '$lib/types';
+	import type { Chain, Address } from 'weaverfi/dist/types';
 
 	// Initializations:
-	export let key: KeyInfo & { chain: Chain, hash: Hash };
+	export let key: ExtendedKeyInfo;
   export let chain: Chain;
 	export let address: Address;
   export let signer: ethers.providers.JsonRpcSigner;

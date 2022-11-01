@@ -1,10 +1,12 @@
 
 // Imports:
+import { ethers } from 'ethers';
 import { KeyManager } from '3pi';
 import weaver from 'weaverfi';
 
 // Type Imports:
-import type { KeyInfo } from '3pi/dist/types';
+import type { Cost } from '$lib/types';
+import type { Token, KeyInfo } from '3pi/dist/types';
 import type { Chain, Address, Hash } from 'weaverfi/dist/types';
 
 // API Tier Interface:
@@ -90,6 +92,18 @@ export const initKeyManager = (chain: Chain) => {
     console.error(`No contract address set for ${chain} chain.`);
     return undefined;
   }
+}
+
+/* ========================================================================================================================================================================= */
+
+// Function to calculate key update cost:
+export const calcCost = (token: Token | undefined, tierID: number, duration: number) => {
+  const cost: Cost = { wei: undefined, tokens: undefined };
+  if(token) {
+    cost.wei = ethers.BigNumber.from(apiTiers[tierID].weiPricePerSecond).mul(duration);
+    cost.tokens = parseFloat(ethers.utils.formatUnits(cost.wei, token.decimals));
+  }
+  return cost;
 }
 
 /* ========================================================================================================================================================================= */

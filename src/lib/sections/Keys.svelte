@@ -7,26 +7,29 @@
 	import Wallet from '$lib/components/Wallet.svelte';
 
 	// Type Imports:
-	import type { ethers } from 'ethers';
-	import type { KeyInfo } from '3pi/dist/types';
-	import type { Chain, Address, Hash } from 'weaverfi/dist/types';
+  import type { Address } from 'weaverfi/dist/types';
+  import type { ExtendedKeyInfo, WalletConnection } from '$lib/types';
 
 	// Initializations:
-  let signer: ethers.providers.JsonRpcSigner | undefined;
-  let chain: Chain | undefined;
-	let address: Address | undefined;
-	let keys: (KeyInfo & { chain: Chain, hash: Hash })[] = [];
+	let wallet: WalletConnection | undefined;
+	let keys: ExtendedKeyInfo[] = [];
 	let fetching: boolean = false;
 	let displayExpired: boolean = true;
+	let loadedWalletAddress: Address | undefined = undefined;
 
-	// Reactive Updates:
-	$: address, getWalletInfo();
+	// Reactive Wallet Info:
+	$: wallet, getWalletInfo();
 
 	// Function to get wallet info:
-	const getWalletInfo = async () => {
-		fetching = true;
-		keys = await getKeys(address);
-		fetching = false;
+	const getWalletInfo = async (options?: { force?: boolean }) => {
+		if(wallet) {
+			if(wallet.address !== loadedWalletAddress || options?.force) {
+				fetching = true;
+				loadedWalletAddress = wallet.address;
+				keys = await getKeys(wallet.address);
+				fetching = false;
+			}
+		}
 	}
 
 </script>
@@ -38,29 +41,32 @@
 	<!-- Top Bar -->
 	<div class="top">
 		<h2>Manage your keys</h2>
-		<Wallet bind:signer bind:chain bind:address />
+		<Wallet bind:wallet onChangeAddress={() => getWalletInfo()} />
 	</div>
 
 	<!-- Keys Display -->
 	<div class="keys">
-		{#if address}
-			{#if chain && signer}
-				{#if !fetching && keys.length === 0}
-					<span class="small muted">You don't seem to have activated any API keys yet.</span>
-				{:else if fetching}
-					<span class="loading">Loading keys...</span>
+		{#if wallet}
+			{#if wallet.address}
+				{#if wallet.chain && wallet.signer}
+					{#if !fetching && keys.length === 0}
+						<span class="small muted">You don't seem to have activated any API keys yet.</span>
+					{:else if fetching}
+						<span class="loading">Loading keys...</span>
+					{:else}
+						{#each [...keys].reverse() as key}
+							<Key {key} chain={wallet.chain} address={wallet.address} signer={wallet.signer} {displayExpired} />
+						{/each}
+					{/if}
+					<NewKey chain={wallet.chain} address={wallet.address} signer={wallet.signer} />
+					{#if !fetching && keys.length > 0}
+						<input type="checkbox" id="displayExpiredKeys" bind:checked={displayExpired} >
+						<label class="toggleDisplayedExpiredKeys small" class:muted={!displayExpired} for="displayExpiredKeys">{displayExpired ? 'Displaying' : 'Hiding'} inactive keys <i class="icofont-eye{displayExpired ? '' : '-blocked'}" /></label>
+					{/if}
 				{/if}
-				{#each [...keys].reverse() as key}
-					<Key {key} {chain} {address} {signer} {displayExpired} />
-				{/each}
-				<NewKey {chain} {address} {signer} />
-				{#if !fetching && keys.length > 0}
-					<input type="checkbox" id="displayExpiredKeys" bind:checked={displayExpired} >
-					<label class="toggleDisplayedExpiredKeys small" class:muted={!displayExpired} for="displayExpiredKeys">{displayExpired ? 'Displaying' : 'Hiding'} inactive keys <i class="icofont-eye{displayExpired ? '' : '-blocked'}" /></label>
-				{/if}
+			{:else}
+				<span class="small muted">Connect your wallet to check on and manage your keys!</span>
 			{/if}
-		{:else}
-			<span class="small muted">Connect your wallet to check on and manage your keys!</span>
 		{/if}
 	</div>
 </section>

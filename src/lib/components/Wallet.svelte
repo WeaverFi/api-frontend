@@ -7,23 +7,21 @@
   import weaver from 'weaverfi';
 
   // Type Imports:
-  import type { Chain, Address, ENSDomain } from 'weaverfi/dist/types';
+  import type { WalletConnection } from '$lib/types';
+  import type { Address, ENSDomain } from 'weaverfi/dist/types';
 
   // Initializations:
-  export let signer: ethers.providers.JsonRpcSigner | undefined = undefined;
-  export let chainID: number | undefined = undefined;
-  export let chain: Chain | undefined = undefined;
-  export let address: Address | undefined = undefined;
-  export let ens: ENSDomain | undefined = undefined;
+  export let wallet: Partial<WalletConnection> = {};
+  export let onChangeAddress: Function = () => {};
   let chainName: string = '';
 
   // Function to check wallet chain ID:
   const checkChainID = async () => {
     try {
       const hexChainID: string = await (window as any).ethereum.request({ method: 'eth_chainId' });
-      chainID = parseInt(hexChainID, 16);
-      chain = chainID ? getChain(chainID) : undefined;
-      chainName = chain ? weaver[chain].getInfo().name : '';
+      wallet.chainID = parseInt(hexChainID, 16);
+      wallet.chain = wallet.chainID ? getChain(wallet.chainID) : undefined;
+      chainName = wallet.chain ? weaver[wallet.chain].getInfo().name : '';
     } catch {
       console.error('Something went wrong while checking chain ID.');
     }
@@ -34,13 +32,14 @@
     try {
       const accounts: string[] = await (window as any).ethereum.request({ method: 'eth_requestAccounts' });
       if(accounts.length > 0) {
-        address = accounts[0] as Address;
+        wallet.address = accounts[0] as Address;
+        onChangeAddress();
         await checkENS();
       } else {
-        address = undefined;
+        wallet.address = undefined;
       }
     } catch(err: any) {
-      address = undefined;
+      wallet.address = undefined;
       if(err.code === 4001) {
         console.error('Wallet connection rejected.');
       } else {
@@ -53,7 +52,7 @@
   const checkSigner = async () => {
     try {
       const browserProvider = new ethers.providers.Web3Provider((window as any).ethereum, 'any');
-      signer = browserProvider.getSigner();
+      wallet.signer = browserProvider.getSigner();
     } catch {
       console.error('Something went wrong while checking wallet\'s signer.');
     }
@@ -62,12 +61,12 @@
   // Function to check ENS domain for a given wallet address:
   const checkENS = async () => {
     try {
-      if(address) {
+      if(wallet.address) {
         const ethProvider = new ethers.providers.JsonRpcProvider(weaver.eth.getInfo().rpcs[0]);
-        const name = await ethProvider.lookupAddress(address);
-        ens = name as ENSDomain ?? undefined;
+        const name = await ethProvider.lookupAddress(wallet.address);
+        wallet.ens = name as ENSDomain ?? undefined;
       } else {
-        ens = undefined;
+        wallet.ens = undefined;
       }
     } catch {
       console.error('Something went wrong while resolving wallet\'s ENS.');
@@ -96,14 +95,14 @@
 <!-- #################################################################################################### -->
 
 <div id="wallet">
-  {#if address}
-    {#if chain}
-      <img src="/chains/{chain}.svg" title="{chainName}" alt="{chainName}">
+  {#if wallet.address}
+    {#if wallet.chain}
+      <img src="/chains/{wallet.chain}.svg" title="{chainName}" alt="{chainName}">
     {/if}
-    {#if ens}
-      <span title="{address}">{ens}</span>
+    {#if wallet.ens}
+      <span title="{wallet.address}">{wallet.ens}</span>
     {:else}
-      <span title="{address}">{address.slice(0, 6)}...{address.slice(-4)}</span>
+      <span title="{wallet.address}">{wallet.address.slice(0, 6)}...{wallet.address.slice(-4)}</span>
     {/if}
   {:else}
     <button on:click={connect}>Connect Wallet</button>

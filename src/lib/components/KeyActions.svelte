@@ -4,11 +4,11 @@
 	import weaver from 'weaverfi';
 
 	// Type Imports:
-	import type { Token, KeyInfo } from '3pi/dist/types';
-	import type { Chain, Hash } from 'weaverfi/dist/types';
+	import type { Token } from '3pi/dist/types';
+  import type { ExtendedKeyInfo } from '$lib/types';
 
 	// Initializations:
-	export let key: KeyInfo & { chain: Chain, hash: Hash };
+	export let key: ExtendedKeyInfo;
 	export let keyActive: boolean;
 	export let token: Token;
 	export let remainingBalance: number;
