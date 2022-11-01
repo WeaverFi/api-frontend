@@ -2,7 +2,7 @@
 
 	// Imports:
 	import { fade, slide } from 'svelte/transition';
-	import { apiTiers, initKeyManager } from '$lib/functions';
+	import { apiTiers, initKeyManager, formatDate } from '$lib/functions';
 	import weaver from 'weaverfi';
 
 	// Type Imports:
@@ -20,7 +20,7 @@
 	const secondsInAMonth: number = 2_628_000;
 	let timeNow = Date.now() / 1000;
 	let token: Token | undefined = undefined;
-	let isCollapsed: boolean = true;
+	let isCollapsed: boolean = false; // <TODO> change back to true
 	let remainingBalance: number = 0;
 	let fetchingBalance: boolean = false;
 
@@ -73,26 +73,25 @@
 				<hr>
 				<div class="keyInfo">
 					<span><strong>Chain:</strong> {weaver[key.chain].getInfo().name}</span>
-					<span><strong>Tier:</strong> {apiTiers[key.tierId].name}</span>
-					<span><strong>Daily Rate Limit:</strong> {apiTiers[key.tierId].dailyRateLimit}</span>
+					<span><strong>Tier:</strong> {apiTiers[key.tierId].name} (${apiTiers[key.tierId].monthlyPrice} /month)</span>
+					<span><strong>Daily Rate Limit:</strong> {apiTiers[key.tierId].dailyRateLimit} Requests</span>
 					{#if timeNow < (key.startTime + secondsInADay)}
-						<span class="info">This key was activated less than 24 hours ago, so its rate limit is still ramping up.</span>
+						<span class="rateLimitWarning">This key was activated less than 24 hours ago, so its rate limit is still ramping up.</span>
 					{/if}
-					<span>Tier Name: {apiTiers[key.tierId].name}</span>
-					<span>Tier Monthly Cost: {apiTiers[key.tierId].monthlyPrice}</span>
-					<span>Tier Daily Rate Limit: {apiTiers[key.tierId].dailyRateLimit}</span>
 					<!-- TODO - add tooltip to let users know that if a key expires and is re-activated, start time will be updated (indicates consecutive active time) -->
-					<span>Start: {key.startTime}</span>
-					<span>Expiry: {key.expiryTime}</span>
+					{#if keyActive}
+						<span><strong>Key valid until {formatDate(key.expiryTime)}.</strong></span>
+					{:else}
+						<span><strong>Key expired on {formatDate(key.expiryTime)}.</strong></span>
+					{/if}
 				</div>
 				<div class="keyActions">
 					{#if token && keyActive}
 						{#if fetchingBalance}
 							<span class="loading">Loading remaining {token.symbol} balance...</span>
 						{:else}
-							<span>Remaining Balance:</span>
-							<span>{remainingBalance.toLocaleString(undefined, { maximumFractionDigits: 2 })} {token.symbol}</span>
-							<i class="icofont-refresh clickable" on:click={getRemainingBalance} on:keydown={getRemainingBalance} />
+							<span><strong>Remaining Balance:</strong></span>
+							<span class="remainingBalance">{remainingBalance.toLocaleString(undefined, { maximumFractionDigits: 2 })} {token.symbol} <img src="{weaver[key.chain].getTokenLogo(token.symbol)}" alt="{token.symbol}"></span>
 							<div class="buttons">
 								<span class="extendKey">Extend</span>
 								<span class="deactivate">Withdraw</span>
@@ -159,17 +158,47 @@
 		border-top: 2px solid var(--secondaryColor);
 	}
 
-	div.keyActions {
-		align-items: center;
+	div.keyInfo > span:last-of-type {
+		margin-top: 1em;
 	}
 
-	span.info {
+	span.rateLimitWarning {
+		margin-left: 1em;
 		color: var(--terciaryColor);
 		font-size: .9em;
 	}
 
-	.clickable {
+	div.keyActions {
+		align-items: center;
+	}
+
+	span.remainingBalance {
+		display: flex;
+		align-items: center;
+		gap: .2em;
+		margin: .2em 0 .5em;
+		font-size: 1.4em;
+	}
+
+	span.remainingBalance > img {
+		height: 1.2em;
+		width: 1.2em;
+	}
+
+	div.buttons {
+		display: flex;
+		gap: 1em;
+	}
+
+	div.buttons > span {
+		width: 7em;
+		padding: .5em 0;
+		text-align: center;
+		color: var(--fontColor);
+		background-color: var(--secondaryColor);
+		border-radius: 1em;
 		cursor: pointer;
+		user-select: none;
 	}
 	
 </style>

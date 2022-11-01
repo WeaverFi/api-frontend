@@ -91,3 +91,12 @@ export const initKeyManager = (chain: Chain) => {
     return undefined;
   }
 }
+
+/* ========================================================================================================================================================================= */
+
+// Function to format new date string from timestamp:
+export const formatDate = (timestampInSeconds: number) => {
+  const date = new Date(timestampInSeconds * 1000);
+  const formattedDate = date.toLocaleString(undefined, { month: 'long', day: 'numeric', year: 'numeric' });
+  return formattedDate;
+}
