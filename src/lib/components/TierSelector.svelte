@@ -12,7 +12,7 @@
 
 <select name="tierSelector" bind:value={selectedTier}>
 	{#each apiTiers as tier}
-		<option value="{tier.id}">{tier.name}: &nbsp;&nbsp; ${tier.monthlyPrice} /month</option>
+		<option value="{tier.id}">{tier.name}: &nbsp; ${tier.monthlyPrice} /month</option>
 	{/each}
 </select>
 

@@ -75,7 +75,7 @@
 				<hr>
 				{#if extendingKey}
 					{#if keyManager && token}
-						<ExtendKey {key} {keyActive} {chain} {address} {signer} {keyManager} {token} onReturn={() => extendingKey = false} />
+						<ExtendKey {key} {chain} {address} {signer} {keyManager} {token} onReturn={() => extendingKey = false} />
 					{/if}
 				{:else if withdrawing}
 					{#if keyManager && token}

@@ -14,7 +14,6 @@
 
 	// Initializations:
 	export let key: ExtendedKeyInfo;
-	export let keyActive: boolean;
   export let chain: Chain;
 	export let address: Address;
   export let signer: ethers.providers.JsonRpcSigner;
@@ -77,50 +76,128 @@
 
 <div class="extendKey">
 	<span class="back" on:click={() => onReturn()} on:keydown={() => onReturn()}><i class="icofont-arrow-left" /> Back</span>
-	<div class="extensionSettings">
-		<h3>Extending API Key</h3>
-		<div class="selections">
-			<span><strong>Chain:</strong> <img src="/chains/{chain}.svg" title="{weaver[chain].getInfo().name}" alt="{weaver[chain].getInfo().name}"></span>
-			<span><strong>Tier:</strong> {tier.name}: &nbsp;&nbsp; ${tier.monthlyPrice} /month</span>
-			<span><strong>Extend Duration By:</strong> <DurationSelector bind:selectedDuration={extensionDuration} /></span>
-		</div>
-		<hr>
-		{#if keyManager && token && extensionCost.tokens !== undefined}
-			<div class="results">
-				<span class="cost"><strong>Key Extension Cost:</strong> {extensionCost.tokens?.toLocaleString(undefined, { maximumFractionDigits: 2 })} {token.symbol} <img src="{weaver[key.chain].getTokenLogo(token.symbol)}" alt="{token.symbol}"></span>
-				{#if chain === key.chain}
-					{#if extensionCost.tokens > balance}
-						<span class="error">Insufficient {token.symbol} balance in wallet.</span>
-					{:else if extensionDuration <= 0}
-						<span class="error">Invalid duration selected.</span>
-					{:else if allowance >= extensionCost.tokens}
-						<span class="extendKeyDuration" on:click={extendKeyDuration} on:keydown={extendKeyDuration}>Extend Key Duration</span>
-						<!-- TODO - show in progress -->
-					{:else}
-						<span class="approvalInfo">
-							<input type="checkbox" id="infiniteApproval" bind:checked={infiniteApproval} >
-							<label class="enableInfiniteApproval" for="infiniteApproval">Infinite Approval? <i class="icofont-ui-{infiniteApproval ? 'check' : 'close'}" /></label>
-							<span class="approve" on:click={updateApproval} on:keydown={updateApproval}>Approve {token.symbol}</span>
-							<!-- TODO - show in progress -->
-						</span>
-					{/if}
-				{:else}
-					<span class="error">Please connect to the {weaver[key.chain].getInfo().name} network.</span>
-				{/if}
-			</div>
-		{:else}
-			<!-- TODO - loading screen -->
-		{/if}
+	<h3>Extending API Key</h3>
+	<div class="selections">
+		<span class="chain"><strong>Chain:</strong> <img src="/chains/{chain}.svg" title="{weaver[chain].getInfo().name}" alt="{weaver[chain].getInfo().name}"></span>
+		<span><strong>Tier:</strong> {tier.name}: &nbsp; ${tier.monthlyPrice} /month</span>
+		<span><strong>Extend Duration By:</strong> <DurationSelector bind:selectedDuration={extensionDuration} /></span>
 	</div>
+	<hr>
+	{#if keyManager && token && extensionCost.tokens !== undefined}
+		<div class="results">
+			<span class="cost"><strong>Key Extension Cost:</strong> {extensionCost.tokens?.toLocaleString(undefined, { maximumFractionDigits: 2 })} {token.symbol} <img src="{weaver[key.chain].getTokenLogo(token.symbol)}" alt="{token.symbol}"></span>
+			{#if chain === key.chain}
+				{#if extensionCost.tokens > balance}
+					<span class="error">Insufficient {token.symbol} balance in wallet.</span>
+				{:else if extensionDuration <= 0}
+					<span class="error">Invalid duration selected.</span>
+				{:else if allowance >= extensionCost.tokens}
+					<span class="extendKeyDuration" on:click={extendKeyDuration} on:keydown={extendKeyDuration}>Extend Key Duration</span>
+					<!-- TODO - show in progress -->
+				{:else}
+					<span class="approvalInfo">
+						<input type="checkbox" id="infiniteApproval" bind:checked={infiniteApproval} >
+						<label class="enableInfiniteApproval" for="infiniteApproval">Infinite Approval? <i class="icofont-ui-{infiniteApproval ? 'check' : 'close'}" /></label>
+						<span class="approve" on:click={updateApproval} on:keydown={updateApproval}>Approve {token.symbol}</span>
+						<!-- TODO - show in progress -->
+					</span>
+				{/if}
+			{:else}
+				<span class="error">Please connect to the {weaver[key.chain].getInfo().name} network.</span>
+			{/if}
+		</div>
+	{:else}
+		<!-- TODO - loading screen -->
+	{/if}
 </div>
 
 <!-- #################################################################################################### -->
 
 <style>
 
+	div.extendKey {
+		display: flex;
+		flex-direction: column;
+		gap: 1em;
+		width: 100%;
+	}
+
 	span.back {
+		margin-top: .5em;
 		font-weight: bold;
 		cursor: pointer;
+	}
+
+	hr {
+		border: none;
+		border-top: 2px solid var(--secondaryColor);
+	}
+
+	div.selections {
+		display: flex;
+		gap: 2em;
+	}
+
+	div.selections > span {
+		display: flex;
+		align-items: center;
+		gap: 1em;
+	}
+
+	div.selections > span.chain > img {
+		height: 1.5em;
+		width: 1.5em;
+	}
+
+	div.results {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+	}
+
+	span.cost {
+		display: flex;
+		align-items: center;
+		gap: .2em;
+		padding: 1em 0;
+	}
+
+	span.cost > strong {
+		margin-right: 1em;
+	}
+
+	span.cost > img {
+		height: 1.2em;
+		width: 1.2em;
+	}
+
+	span.extendKeyDuration, span.approve {
+		padding: .2em 1em;
+		color: var(--fontColor);
+		background-color: var(--secondaryColor);
+		border-radius: .5em;
+		cursor: pointer;
+	}
+
+	span.error {
+		color: darkred;
+	}
+
+	span.approvalInfo {
+		display: flex;
+		align-items: center;
+		gap: 1em;
+	}
+
+	input#infiniteApproval {
+		display: none;
+	}
+
+	label.enableInfiniteApproval {
+		margin-top: .2em;
+		font-size: .8em;
+		cursor: pointer;
+		user-select: none;
 	}
 	
 </style>
