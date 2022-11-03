@@ -118,7 +118,7 @@
 				<span><strong>Duration:</strong> <DurationSelector bind:selectedDuration={keyDuration} /></span>
 			</div>
 			<hr>
-			{#if keyManager && token && activationCost.tokens !== undefined}
+			{#if token && activationCost.tokens !== undefined}
 				<div class="results">
 					<span class="cost"><strong>Key Activation Cost:</strong> {activationCost.tokens?.toLocaleString(undefined, { maximumFractionDigits: 2 })} {token.symbol} <img src="{weaver[keyChain].getTokenLogo(token.symbol)}" alt="{token.symbol}"></span>
 					{#if chain === keyChain}
@@ -147,8 +147,6 @@
 						<span class="error">Please connect to the {weaver[keyChain].getInfo().name} network.</span>
 					{/if}
 				</div>
-			{:else}
-				<!-- TODO - loading details -->
 			{/if}
 		</div>
 	{/if}

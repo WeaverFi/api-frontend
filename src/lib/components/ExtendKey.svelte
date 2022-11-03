@@ -90,7 +90,7 @@
 		<span><strong>Extend Duration By:</strong> <DurationSelector bind:selectedDuration={extensionDuration} /></span>
 	</div>
 	<hr>
-	{#if keyManager && token && extensionCost.tokens !== undefined}
+	{#if extensionCost.tokens !== undefined}
 		<div class="results">
 			<span class="cost"><strong>Key Extension Cost:</strong> {extensionCost.tokens?.toLocaleString(undefined, { maximumFractionDigits: 2 })} {token.symbol} <img src="{weaver[key.chain].getTokenLogo(token.symbol)}" alt="{token.symbol}"></span>
 			{#if chain === key.chain}
@@ -119,8 +119,6 @@
 				<span class="error">Please connect to the {weaver[key.chain].getInfo().name} network.</span>
 			{/if}
 		</div>
-	{:else}
-		<!-- TODO - loading screen -->
 	{/if}
 </div>
 
