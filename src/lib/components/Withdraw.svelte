@@ -17,6 +17,7 @@
 	export let keyManager: KeyManager;
 	export let token: Token;
 	export let onReturn: Function;
+	export let onWithdrawal: Function;
 	let withdrawalInProgress: boolean = false;
 
 	// Function to withdraw key's remaining balance:
@@ -24,7 +25,7 @@
 		withdrawalInProgress = true;
 		await keyManager.deactivateKey(key.hash, signer);
 		withdrawalInProgress = false;
-		// <TODO> need to refresh key list when complete
+		onWithdrawal();
 	}
 
 </script>

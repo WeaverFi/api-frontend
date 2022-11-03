@@ -20,6 +20,7 @@
 	export let keyManager: KeyManager;
 	export let token: Token;
 	export let onReturn: Function;
+	export let onKeyExtended: Function;
 	const secondsInAMonth: number = 2_628_000;
 	let balance: number = 0;
 	let allowance: number = 0;
@@ -43,7 +44,7 @@
 		extensionInProgress = true;
 		await keyManager.extendKey(key.hash, extensionDuration, signer);
 		extensionInProgress = false;
-		// <TODO> need to refresh key list when complete
+		onKeyExtended();
 	}
 
 	// Function to fetch current wallet balance:

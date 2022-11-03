@@ -24,7 +24,7 @@
 	const getWalletInfo = async (options?: { force?: boolean }) => {
 		if(wallet) {
 			if(wallet.address !== loadedWalletAddress || options?.force) {
-				fetching = true;
+				fetching = options?.force ? false : true;
 				loadedWalletAddress = wallet.address;
 				keys = await getKeys(wallet.address);
 				fetching = false;
@@ -55,7 +55,7 @@
 						<span class="loading">Loading keys...</span>
 					{:else}
 						{#each [...keys].reverse() as key}
-							<Key {key} chain={wallet.chain} address={wallet.address} signer={wallet.signer} {displayExpired} />
+							<Key {key} chain={wallet.chain} address={wallet.address} signer={wallet.signer} {displayExpired} onKeyUpdated={async () => getWalletInfo({ force: true })} />
 						{/each}
 					{/if}
 					<NewKey chain={wallet.chain} address={wallet.address} signer={wallet.signer} />

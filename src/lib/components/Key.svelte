@@ -21,7 +21,9 @@
 	export let address: Address;
   export let signer: ethers.providers.JsonRpcSigner;
 	export let displayExpired: boolean = true;
+	export let onKeyUpdated: Function;
 	let timeNow = Date.now() / 1000;
+	let keyActive = key.expiryTime > timeNow;
 	let token: Token | undefined = undefined;
 	let isCollapsed: boolean = true;
 	let remainingBalance: number = 0;
@@ -32,9 +34,6 @@
 	// Reactive Key Manager Info:
 	$: keyManager = initKeyManager(key.chain);
 	$: keyManager, fetchToken();
-
-	// Reactive Key Status:
-	$: keyActive = key.expiryTime > timeNow;
 
 	// Reactive Remaining Balance:
 	$: token, getRemainingBalance();
@@ -58,6 +57,15 @@
 		}
 	}
 
+	// Function to update key details post-transactions:
+	const updateKeyDetails = async () => {
+		await onKeyUpdated();
+		timeNow = Date.now() / 1000;
+		keyActive = key.expiryTime > timeNow;
+		extendingKey = false;
+		withdrawing = false;
+	}
+
 </script>
 
 <!-- #################################################################################################### -->
@@ -75,11 +83,11 @@
 				<hr>
 				{#if extendingKey}
 					{#if keyManager && token}
-						<ExtendKey {key} {chain} {address} {signer} {keyManager} {token} onReturn={() => extendingKey = false} />
+						<ExtendKey {key} {chain} {address} {signer} {keyManager} {token} onReturn={() => extendingKey = false} onKeyExtended={updateKeyDetails} />
 					{/if}
 				{:else if withdrawing}
 					{#if keyManager && token}
-						<Withdraw {key} {chain} {signer} {keyManager} {token} onReturn={() => withdrawing = false} />
+						<Withdraw {key} {chain} {signer} {keyManager} {token} onReturn={() => withdrawing = false} onWithdrawal={updateKeyDetails} />
 					{/if}
 				{:else}
 					<KeyDetails {key} {keyActive} onClickReActivate={() => extendingKey = true} />
