@@ -64,6 +64,7 @@
 		keyActive = key.expiryTime > timeNow;
 		extendingKey = false;
 		withdrawing = false;
+		getRemainingBalance();
 	}
 
 </script>

@@ -41,7 +41,7 @@
 	</span>
 	<span><strong>Tier:</strong> {tier.name} (${tier.monthlyPrice} /month)</span>
 	<span><strong>Daily Rate Limit:</strong> {tier.dailyRateLimit} Requests</span>
-	{#if timeNow < (key.startTime + secondsInADay)}
+	{#if keyActive && timeNow < (key.startTime + secondsInADay)}
 		<span class="rateLimitWarning">This key was activated less than 24 hours ago, so its rate limit is still ramping up.</span>
 	{/if}
 	<!-- TODO - add tooltip to let users know that if a key expires and is re-activated, start time will be updated (indicates consecutive active time) -->

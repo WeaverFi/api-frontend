@@ -16,6 +16,7 @@
   export let chain: Chain;
 	export let address: Address;
   export let signer: ethers.providers.JsonRpcSigner;
+	export let onKeyCreated: Function;
 	const secondsInAMonth: number = 2_628_000;
 	let token: Token | undefined = undefined;
 	let isCollapsed: boolean = true;
@@ -24,6 +25,7 @@
 	let infiniteApproval: boolean = false;
 	let approvalInProgress: boolean = false;
 	let activationInProgress: boolean = false;
+	let displayingNewKey: boolean = false;
 
 	 // <TODO> Input actual key defaults
 	// New Key Info:
@@ -51,7 +53,10 @@
 				await keyManager.activateKey(keyHash, keyDuration, keyTierID, signer);
 			} finally {
 				activationInProgress = false;
-				// <TODO> need to refresh key list when complete
+				displayingNewKey = true;
+				fetchBalance();
+				fetchAllowance();
+				onKeyCreated();
 			}
 		}
 	}
@@ -92,63 +97,71 @@
 		}
 	}
 
-	// <TODO> need to display generated api key when complete
-
 </script>
 
 <!-- #################################################################################################### -->
 
 <div class="newKeyWrapper">
 	{#if isCollapsed}
-		<span class="newKey" on:click={() => isCollapsed = !isCollapsed} on:keydown={() => isCollapsed = !isCollapsed}>
+		<span class="newKey" on:click={() => isCollapsed = false} on:keydown={() => isCollapsed = false}>
 			<strong>New API Key</strong>
 			<i class="icofont-plus" />
 		</span>
 	{:else}
-		<div class="newKeySettings">
-			<i class="icofont-ui-close close" on:click={() => isCollapsed = !isCollapsed} on:keydown={() => isCollapsed = !isCollapsed} />
-			<h3>New API Key Settings</h3>
-			<hr>
-			<div class="selections">
-				<!-- TODO - need tooltip next to chain to explain that this is just for payment, API is still usable for data on all chains -->
-				<span><strong>Chain:</strong> <ChainSelector bind:selectedChain={keyChain} /></span>
-				<!-- TODO - need tooltip next to tier to explain what it defines (cost/rate limit) -->
-				<span><strong>Tier:</strong> <TierSelector bind:selectedTier={keyTierID} /></span>
-				<!-- TODO - need tooltip next to chain to explain that you can extend this duration at any time -->
-				<span><strong>Duration:</strong> <DurationSelector bind:selectedDuration={keyDuration} /></span>
+		{#if displayingNewKey}
+			<div class="newKeyDisplay">
+				<i class="icofont-ui-close close" on:click={() => { displayingNewKey = false; isCollapsed = true }} on:keydown={() => { displayingNewKey = false; isCollapsed = true }} />
+				<h3>Your New API Key:</h3>
+				<span class="apiKey">{apiKeyGenerated}</span>
+				<span><strong>Copy this key and save it somewhere safe!</strong></span>
+				<span><strong>If you lose it, you'll have to disable your key and create a new one.</strong></span>
 			</div>
-			<hr>
-			{#if token && activationCost.tokens !== undefined}
-				<div class="results">
-					<span class="cost"><strong>Key Activation Cost:</strong> {activationCost.tokens?.toLocaleString(undefined, { maximumFractionDigits: 2 })} {token.symbol} <img src="{weaver[keyChain].getTokenLogo(token.symbol)}" alt="{token.symbol}"></span>
-					{#if chain === keyChain}
-						{#if activationCost.tokens > balance}
-							<span class="error">Insufficient {token.symbol} balance in wallet.</span>
-						{:else if keyDuration <= 0}
-							<span class="error">Invalid duration selected.</span>
-						{:else if allowance >= activationCost.tokens}
-							{#if activationInProgress}
-								<span class="createNewKey inProgress">Creating New Key...</span>
+		{:else}
+			<div class="newKeySettings">
+				<i class="icofont-ui-close close" on:click={() => isCollapsed = true} on:keydown={() => isCollapsed = true} />
+				<h3>New API Key Settings</h3>
+				<hr>
+				<div class="selections">
+					<!-- TODO - need tooltip next to chain to explain that this is just for payment, API is still usable for data on all chains -->
+					<span><strong>Chain:</strong> <ChainSelector bind:selectedChain={keyChain} /></span>
+					<!-- TODO - need tooltip next to tier to explain what it defines (cost/rate limit) -->
+					<span><strong>Tier:</strong> <TierSelector bind:selectedTier={keyTierID} /></span>
+					<!-- TODO - need tooltip next to chain to explain that you can extend this duration at any time -->
+					<span><strong>Duration:</strong> <DurationSelector bind:selectedDuration={keyDuration} /></span>
+				</div>
+				<hr>
+				{#if token && activationCost.tokens !== undefined}
+					<div class="results">
+						<span class="cost"><strong>Key Activation Cost:</strong> {activationCost.tokens?.toLocaleString(undefined, { maximumFractionDigits: 2 })} {token.symbol} <img src="{weaver[keyChain].getTokenLogo(token.symbol)}" alt="{token.symbol}"></span>
+						{#if chain === keyChain}
+							{#if activationCost.tokens > balance}
+								<span class="error">Insufficient {token.symbol} balance in wallet.</span>
+							{:else if keyDuration <= 0}
+								<span class="error">Invalid duration selected.</span>
+							{:else if allowance >= activationCost.tokens}
+								{#if activationInProgress}
+									<span class="createNewKey inProgress">Creating New Key...</span>
+								{:else}
+									<span class="createNewKey" on:click={createNewKey} on:keydown={createNewKey}>Create New Key</span>
+								{/if}
 							{:else}
-								<span class="createNewKey" on:click={createNewKey} on:keydown={createNewKey}>Create New Key</span>
+								<span class="approvalInfo">
+									{#if approvalInProgress}
+										<span class="approve inProgress">Approving {token.symbol}...</span>
+									{:else}
+										<input type="checkbox" id="infiniteApproval" bind:checked={infiniteApproval} >
+										<label class="enableInfiniteApproval" for="infiniteApproval">Infinite Approval? <i class="icofont-ui-{infiniteApproval ? 'check' : 'close'}" /></label>
+										<span class="approve" on:click={updateApproval} on:keydown={updateApproval}>Approve {token.symbol}</span>
+									{/if}
+								</span>
 							{/if}
 						{:else}
-							<span class="approvalInfo">
-								{#if approvalInProgress}
-									<span class="approve inProgress">Approving {token.symbol}...</span>
-								{:else}
-									<input type="checkbox" id="infiniteApproval" bind:checked={infiniteApproval} >
-									<label class="enableInfiniteApproval" for="infiniteApproval">Infinite Approval? <i class="icofont-ui-{infiniteApproval ? 'check' : 'close'}" /></label>
-									<span class="approve" on:click={updateApproval} on:keydown={updateApproval}>Approve {token.symbol}</span>
-								{/if}
-							</span>
+							<span class="error">Please connect to the {weaver[keyChain].getInfo().name} network.</span>
 						{/if}
-					{:else}
-						<span class="error">Please connect to the {weaver[keyChain].getInfo().name} network.</span>
-					{/if}
-				</div>
-			{/if}
-		</div>
+					</div>
+				{/if}
+			</div>
+		{/if}
 	{/if}
 </div>
 
@@ -176,6 +189,20 @@
 		cursor: pointer;
 	}
 
+	div.newKeyDisplay {
+		position: relative;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: .5em;
+		padding: 2em 1em;
+		text-align: center;
+	}
+
+	span.apiKey {
+		font-size: 1.2em;
+	}
+
 	div.newKeySettings {
 		position: relative;
 		display: flex;
@@ -185,7 +212,7 @@
 		text-align: left;
 	}
 
-	div.newKeySettings > i.close {
+	i.close {
 		position: absolute;
 		inset: 1em 1em auto auto;
 		cursor: pointer;

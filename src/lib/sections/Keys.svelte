@@ -21,10 +21,13 @@
 	$: wallet, getWalletInfo();
 
 	// Function to get wallet info:
-	const getWalletInfo = async (options?: { force?: boolean }) => {
+	const getWalletInfo = async (options?: { force?: boolean, reset?: boolean }) => {
 		if(wallet) {
 			if(wallet.address !== loadedWalletAddress || options?.force) {
-				fetching = options?.force ? false : true;
+				if(wallet.address !== loadedWalletAddress || options?.reset) {
+					fetching = true;
+					keys = [];
+				}
 				loadedWalletAddress = wallet.address;
 				keys = await getKeys(wallet.address);
 				fetching = false;
@@ -58,7 +61,7 @@
 							<Key {key} chain={wallet.chain} address={wallet.address} signer={wallet.signer} {displayExpired} onKeyUpdated={async () => getWalletInfo({ force: true })} />
 						{/each}
 					{/if}
-					<NewKey chain={wallet.chain} address={wallet.address} signer={wallet.signer} />
+					<NewKey chain={wallet.chain} address={wallet.address} signer={wallet.signer} onKeyCreated={async () => getWalletInfo({ force: true, reset: true })} />
 					{#if !fetching && keys.length > 0}
 						<input type="checkbox" id="displayExpiredKeys" bind:checked={displayExpired} >
 						<label class="toggleDisplayedExpiredKeys small" class:muted={!displayExpired} for="displayExpiredKeys">{displayExpired ? 'Displaying' : 'Hiding'} inactive keys <i class="icofont-eye{displayExpired ? '' : '-blocked'}" /></label>
