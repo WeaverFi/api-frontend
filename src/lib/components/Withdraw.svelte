@@ -22,10 +22,13 @@
 
 	// Function to withdraw key's remaining balance:
 	const withdrawKeyBalance = async () => {
-		withdrawalInProgress = true;
-		await keyManager.deactivateKey(key.hash, signer);
-		withdrawalInProgress = false;
-		onWithdrawal();
+		try {
+			withdrawalInProgress = true;
+			await keyManager.deactivateKey(key.hash, signer);
+		} finally {
+			withdrawalInProgress = false;
+			onWithdrawal();
+		}
 	}
 
 </script>
@@ -38,8 +41,11 @@
 		<h3>Are you sure you want to withdraw?</h3>
 		<p>This action will return this key's remaining {token.symbol} balance to your wallet, and you will no longer be able to use it for any API queries.</p>
 		{#if chain === key.chain}
-			<span class="withdrawKeyBalance" on:click={withdrawKeyBalance} on:keydown={withdrawKeyBalance}>Confirm Withdrawal</span>
-			<!-- TODO - show in progress -->
+			{#if withdrawalInProgress}
+				<span class="withdrawKeyBalance inProgress">Withdrawing...</span>
+			{:else}
+				<span class="withdrawKeyBalance" on:click={withdrawKeyBalance} on:keydown={withdrawKeyBalance}>Confirm Withdrawal</span>
+			{/if}
 		{:else}
 			<span class="error">Please connect to the {weaver[key.chain].getInfo().name} network.</span>
 		{/if}
@@ -80,6 +86,11 @@
 		background-color: var(--secondaryColor);
 		border-radius: .5em;
 		cursor: pointer;
+		user-select: none;
+	}
+
+	span.inProgress {
+		cursor: wait;
 	}
 
 	span.error {

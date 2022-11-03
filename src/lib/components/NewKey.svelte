@@ -44,12 +44,15 @@
 	// Function to create and activate new key:
 	const createNewKey = async () => {
 		if(keyManager) {
-			activationInProgress = true;
-			apiKeyGenerated = keyManager.generateNewKey();
-			const keyHash = keyManager.getPublicHash(apiKeyGenerated);
-			await keyManager.activateKey(keyHash, keyDuration, keyTierID, signer);
-			activationInProgress = false;
-			// <TODO> need to refresh key list when complete
+			try {
+				activationInProgress = true;
+				apiKeyGenerated = keyManager.generateNewKey();
+				const keyHash = keyManager.getPublicHash(apiKeyGenerated);
+				await keyManager.activateKey(keyHash, keyDuration, keyTierID, signer);
+			} finally {
+				activationInProgress = false;
+				// <TODO> need to refresh key list when complete
+			}
 		}
 	}
 
@@ -75,14 +78,17 @@
 	// Function to update approval amount:
 	const updateApproval = async () => {
 		if(keyManager && activationCost.wei) {
-			approvalInProgress = true;
-			if(infiniteApproval) {
-				await keyManager.approve(ethers.constants.MaxUint256, signer);
-			} else {
-				await keyManager.approve(activationCost.wei, signer);
+			try {
+				approvalInProgress = true;
+				if(infiniteApproval) {
+					await keyManager.approve(ethers.constants.MaxUint256, signer);
+				} else {
+					await keyManager.approve(activationCost.wei, signer);
+				}
+			} finally {
+				approvalInProgress = false;
+				fetchAllowance();
 			}
-			approvalInProgress = false;
-			fetchAllowance();
 		}
 	}
 
@@ -121,14 +127,20 @@
 						{:else if keyDuration <= 0}
 							<span class="error">Invalid duration selected.</span>
 						{:else if allowance >= activationCost.tokens}
-							<span class="createNewKey" on:click={createNewKey} on:keydown={createNewKey}>Create New Key</span>
-							<!-- TODO - show in progress -->
+							{#if activationInProgress}
+								<span class="createNewKey inProgress">Creating New Key...</span>
+							{:else}
+								<span class="createNewKey" on:click={createNewKey} on:keydown={createNewKey}>Create New Key</span>
+							{/if}
 						{:else}
 							<span class="approvalInfo">
-								<input type="checkbox" id="infiniteApproval" bind:checked={infiniteApproval} >
-								<label class="enableInfiniteApproval" for="infiniteApproval">Infinite Approval? <i class="icofont-ui-{infiniteApproval ? 'check' : 'close'}" /></label>
-								<span class="approve" on:click={updateApproval} on:keydown={updateApproval}>Approve {token.symbol}</span>
-								<!-- TODO - show in progress -->
+								{#if approvalInProgress}
+									<span class="approve inProgress">Approving {token.symbol}...</span>
+								{:else}
+									<input type="checkbox" id="infiniteApproval" bind:checked={infiniteApproval} >
+									<label class="enableInfiniteApproval" for="infiniteApproval">Infinite Approval? <i class="icofont-ui-{infiniteApproval ? 'check' : 'close'}" /></label>
+									<span class="approve" on:click={updateApproval} on:keydown={updateApproval}>Approve {token.symbol}</span>
+								{/if}
 							</span>
 						{/if}
 					{:else}
@@ -225,6 +237,11 @@
 		background-color: var(--secondaryColor);
 		border-radius: .5em;
 		cursor: pointer;
+		user-select: none;
+	}
+
+	span.inProgress {
+		cursor: wait;
 	}
 
 	span.error {
