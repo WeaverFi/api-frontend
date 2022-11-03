@@ -44,7 +44,6 @@
 	{#if keyActive && timeNow < (key.startTime + secondsInADay)}
 		<span class="rateLimitWarning">This key was activated less than 24 hours ago, so its rate limit is still ramping up.</span>
 	{/if}
-	<!-- TODO - add tooltip to let users know that if a key expires and is re-activated, start time will be updated (indicates consecutive active time) -->
 	{#if keyActive}
 		<span><strong>Key valid until {formatDate(key.expiryTime)}.</strong></span>
 	{:else}

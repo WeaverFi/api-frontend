@@ -4,6 +4,7 @@
 	import { ethers } from 'ethers';
 	import { initKeyManager, calcCost } from '$lib/functions';
 	import weaver from 'weaverfi';
+	import Tooltip from '$lib/components/Tooltip.svelte';
 	import TierSelector from '$lib/components/TierSelector.svelte';
 	import ChainSelector from '$lib/components/ChainSelector.svelte';
 	import DurationSelector from '$lib/components/DurationSelector.svelte';
@@ -18,6 +19,11 @@
   export let signer: ethers.providers.JsonRpcSigner;
 	export let onKeyCreated: Function;
 	const secondsInAMonth: number = 2_628_000;
+	const tooltips = {
+		chain: 'This defines where your key is paid for and validated - the API will be usable to fetch data from all chains regardless of this selection.',
+		tier: 'Your key\'s tier determines its cost as well as how many daily API queries you can make.',
+		duration: 'You may extend this duration further or cancel your key at any time.'
+	}
 	let token: Token | undefined = undefined;
 	let isCollapsed: boolean = true;
 	let balance: number = 0;
@@ -122,12 +128,9 @@
 				<h3>New API Key Settings</h3>
 				<hr>
 				<div class="selections">
-					<!-- TODO - need tooltip next to chain to explain that this is just for payment, API is still usable for data on all chains -->
-					<span><strong>Chain:</strong> <ChainSelector bind:selectedChain={keyChain} /></span>
-					<!-- TODO - need tooltip next to tier to explain what it defines (cost/rate limit) -->
-					<span><strong>Tier:</strong> <TierSelector bind:selectedTier={keyTierID} /></span>
-					<!-- TODO - need tooltip next to chain to explain that you can extend this duration at any time -->
-					<span><strong>Duration:</strong> <DurationSelector bind:selectedDuration={keyDuration} /></span>
+					<span><strong>Chain:</strong> <ChainSelector bind:selectedChain={keyChain} /> <Tooltip text={tooltips.chain} /></span>
+					<span><strong>Tier:</strong> <TierSelector bind:selectedTier={keyTierID} /> <Tooltip text={tooltips.tier} /></span>
+					<span><strong>Duration:</strong> <DurationSelector bind:selectedDuration={keyDuration} /> <Tooltip text={tooltips.duration} /></span>
 				</div>
 				<hr>
 				{#if token && activationCost.tokens !== undefined}
