@@ -25,9 +25,9 @@
 		try {
 			withdrawalInProgress = true;
 			await keyManager.deactivateKey(key.hash, signer);
+			onWithdrawal();
 		} finally {
 			withdrawalInProgress = false;
-			onWithdrawal();
 		}
 	}
 

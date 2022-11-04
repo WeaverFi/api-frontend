@@ -44,11 +44,11 @@
 		try {
 			extensionInProgress = true;
 			await keyManager.extendKey(key.hash, extensionDuration, signer);
-		} finally {
-			extensionInProgress = false;
 			fetchBalance();
 			fetchAllowance();
 			onKeyExtended();
+		} finally {
+			extensionInProgress = false;
 		}
 	}
 
