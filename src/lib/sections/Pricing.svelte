@@ -127,5 +127,27 @@
 		color: var(--secondaryFontColor);
 		font-size: .9em;
 	}
+
+	@media screen and (max-width: 450px) {
+		div.tiers {
+			flex-direction: column;
+			align-items: center;
+		}
+		div.tier {
+			gap: .5em;
+			width: min(20em, 100%);
+		}
+		div.tier:first-of-type {
+			border-radius: 1em 1em 0 0;
+		}
+
+		div.tier:last-of-type {
+			border-radius: 0 0 1em 1em;
+		}
+		div.tier:not(:last-of-type) {
+			border: none;
+			border-bottom: 2px solid var(--secondaryFontColor);
+		}
+	}
 	
 </style>

@@ -65,8 +65,10 @@
 	}
 
 	div.brand > h1 {
+		margin-right: 1em;
 		font-size: 2em;
 		color: var(--primaryColor);
+		white-space: nowrap;
 	}
 
 	div.links {

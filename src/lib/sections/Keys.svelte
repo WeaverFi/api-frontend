@@ -95,6 +95,10 @@
 		margin-top: 2em;
 	}
 
+	div.keys > span {
+		text-align: center;
+	}
+
 	.small {
 		font-size: .9em;
 	}

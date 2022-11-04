@@ -147,5 +147,11 @@
 		border: none;
 		border-top: 2px solid var(--secondaryColor);
 	}
+
+	@media screen and (max-width: 300px) {
+		span.status {
+			display: none;
+		}
+	}
 	
 </style>

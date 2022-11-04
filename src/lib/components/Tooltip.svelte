@@ -25,6 +25,7 @@
 
 	span.tooltipText {
 		position: absolute;
+		left: -12.5em;
 		display: block;
 		width: min(25em, 90vw);
 		padding: .5em 1em;

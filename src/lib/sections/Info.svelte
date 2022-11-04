@@ -15,7 +15,7 @@
 	}
 
 	img {
-		width: 40em;
+		width: min(40em, 90%);
 		margin: 0 auto;
 	}
 	

@@ -128,9 +128,9 @@
 				<h3>New API Key Settings</h3>
 				<hr>
 				<div class="selections">
-					<span><strong>Chain:</strong> <ChainSelector bind:selectedChain={keyChain} /> <Tooltip text={tooltips.chain} /></span>
-					<span><strong>Tier:</strong> <TierSelector bind:selectedTier={keyTierID} /> <Tooltip text={tooltips.tier} /></span>
-					<span><strong>Duration:</strong> <DurationSelector bind:selectedDuration={keyDuration} /> <Tooltip text={tooltips.duration} /></span>
+					<span class="chainSelection"><strong>Chain:</strong> <ChainSelector bind:selectedChain={keyChain} /> <Tooltip text={tooltips.chain} /></span>
+					<span class="tierSelection"><strong>Tier:</strong> <TierSelector bind:selectedTier={keyTierID} /> <Tooltip text={tooltips.tier} /></span>
+					<span class="durationSelection"><strong>Duration:</strong> <DurationSelector bind:selectedDuration={keyDuration} /> <Tooltip text={tooltips.duration} /></span>
 				</div>
 				<hr>
 				{#if token && activationCost.tokens !== undefined}
@@ -228,19 +228,24 @@
 
 	div.selections {
 		display: flex;
-		gap: 2em;
+		gap: 1em;
+		flex-wrap: wrap;
 	}
 
 	div.selections > span {
 		display: flex;
 		align-items: center;
 		gap: 1em;
+		margin-right: 1em;
 	}
 
 	div.results {
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
+		gap: 1em;
+		flex-wrap: wrap;
+		white-space: nowrap;
 	}
 
 	span.cost {

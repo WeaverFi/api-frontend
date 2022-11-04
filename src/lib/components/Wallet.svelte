@@ -117,6 +117,7 @@
     display: flex;
     align-items: center;
     gap: .5em;
+    white-space: nowrap;
   }
 
   img {
