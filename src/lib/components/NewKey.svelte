@@ -57,12 +57,12 @@
 				apiKeyGenerated = keyManager.generateNewKey();
 				const keyHash = keyManager.getPublicHash(apiKeyGenerated);
 				await keyManager.activateKey(keyHash, keyDuration, keyTierID, signer);
-			} finally {
-				activationInProgress = false;
-				displayingNewKey = true;
 				fetchBalance();
 				fetchAllowance();
 				onKeyCreated();
+				displayingNewKey = true;
+			} finally {
+				activationInProgress = false;
 			}
 		}
 	}
@@ -241,7 +241,6 @@
 
 	div.results {
 		display: flex;
-		justify-content: space-between;
 		align-items: center;
 		gap: 1em;
 		flex-wrap: wrap;
@@ -262,6 +261,10 @@
 	span.cost > img {
 		height: 1.2em;
 		width: 1.2em;
+	}
+
+	span.createNewKey, span.error, span.approvalInfo {
+		margin-left: auto;
 	}
 
 	span.createNewKey, span.approve {

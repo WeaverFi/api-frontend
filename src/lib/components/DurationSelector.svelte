@@ -13,9 +13,9 @@
 	// Function to set duration in seconds based on selections:
 	const setDuration = () => {
 		if(timeScale === 'weeks') {
-			selectedDuration = number * secondsInAWeek;
+			selectedDuration = Math.ceil(number * secondsInAWeek);
 		} else if(timeScale === 'months') {
-			selectedDuration = number * secondsInAMonth;
+			selectedDuration = Math.ceil(number * secondsInAMonth);
 		}
 	}
 
