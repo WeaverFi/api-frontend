@@ -130,6 +130,7 @@
 		gap: .5em;
 		padding: .5em 1em;
 		cursor: pointer;
+		user-select: none;
 	}
 
 	div.top > span.hash {
@@ -138,6 +139,7 @@
 
 	div.keyInfo {
 		display: flex;
+		gap: 1em;
 		flex-wrap: wrap;
 		padding: 0 1em 1em;
 	}

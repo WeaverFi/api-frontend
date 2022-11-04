@@ -148,13 +148,15 @@
 
 	div.selections {
 		display: flex;
-		gap: 2em;
+		gap: 1em;
+		flex-wrap: wrap;
 	}
 
 	div.selections > span {
 		display: flex;
 		align-items: center;
 		gap: 1em;
+		margin-right: 1em;
 	}
 
 	div.selections > span.chain > img {
@@ -164,8 +166,10 @@
 
 	div.results {
 		display: flex;
-		justify-content: space-between;
 		align-items: center;
+		gap: 1em;
+		flex-wrap: wrap;
+		white-space: nowrap;
 	}
 
 	span.cost {
@@ -182,6 +186,10 @@
 	span.cost > img {
 		height: 1.2em;
 		width: 1.2em;
+	}
+
+	span.extendKeyDuration, span.error, span.approvalInfo {
+		margin-left: auto;
 	}
 
 	span.extendKeyDuration, span.approve {

@@ -47,7 +47,10 @@
 	{#if keyActive}
 		<span><strong>Key valid until {formatDate(key.expiryTime)}.</strong></span>
 	{:else}
-		<span>Key expired on {formatDate(key.expiryTime)}. <span class="reactivateKey" on:click={() => onClickReActivate()} on:keydown={() => onClickReActivate()}>Click here to extend key's duration.</span></span>
+		<span class="expiry">
+			<span>Key expired on {formatDate(key.expiryTime)}.</span>
+			<span class="reactivateKey" on:click={() => onClickReActivate()} on:keydown={() => onClickReActivate()}>Click here to extend key's duration.</span>
+		</span>
 	{/if}
 </div>
 
@@ -60,6 +63,7 @@
 		display: flex;
 		flex-direction: column;
 		padding-top: 1em;
+		white-space: nowrap;
 	}
 
 	div.keyDetails > span:last-of-type {
@@ -76,8 +80,13 @@
 		font-size: .9em;
 	}
 
+	span.expiry {
+		display: flex;
+		gap: .5em;
+		flex-wrap: wrap;
+	}
+
 	span.reactivateKey {
-		margin-left: .5em;
 		font-weight: bold;
 		cursor: pointer;
 	}

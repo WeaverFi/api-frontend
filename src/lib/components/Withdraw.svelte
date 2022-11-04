@@ -96,5 +96,11 @@
 	span.error {
 		color: darkred;
 	}
+
+	@media screen and (max-width: 500px) {
+		div.withdrawalInfo {
+			margin-top: 1em;
+		}
+	}
 	
 </style>
