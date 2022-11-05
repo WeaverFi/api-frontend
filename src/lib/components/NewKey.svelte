@@ -33,9 +33,8 @@
 	let activationInProgress: boolean = false;
 	let displayingNewKey: boolean = false;
 
-	 // <TODO> Input actual key defaults
 	// New Key Info:
-	let keyChain: Chain = 'mumbai';
+	let keyChain: Chain = 'op';
 	let keyDuration: number = secondsInAMonth;
 	let keyTierID: number = 1;
 	let apiKeyGenerated: string | undefined = undefined;
@@ -88,13 +87,13 @@
 
 	// Function to update approval amount:
 	const updateApproval = async () => {
-		if(keyManager && activationCost.wei) {
+		if(keyManager && activationCost.amount) {
 			try {
 				approvalInProgress = true;
 				if(infiniteApproval) {
 					await keyManager.approve(ethers.constants.MaxUint256, signer);
 				} else {
-					await keyManager.approve(activationCost.wei, signer);
+					await keyManager.approve(activationCost.amount, signer);
 				}
 			} finally {
 				approvalInProgress = false;
@@ -133,15 +132,15 @@
 					<span class="durationSelection"><strong>Duration:</strong> <DurationSelector bind:selectedDuration={keyDuration} /> <Tooltip text={tooltips.duration} /></span>
 				</div>
 				<hr>
-				{#if token && activationCost.tokens !== undefined}
+				{#if token && activationCost.formatted !== undefined}
 					<div class="results">
-						<span class="cost"><strong>Key Activation Cost:</strong> {activationCost.tokens?.toLocaleString(undefined, { maximumFractionDigits: 2 })} {token.symbol} <img src="{weaver[keyChain].getTokenLogo(token.symbol)}" alt="{token.symbol}"></span>
+						<span class="cost"><strong>Key Activation Cost:</strong> {activationCost.formatted?.toLocaleString(undefined, { maximumFractionDigits: 2 })} {token.symbol} <img src="{weaver[keyChain].getTokenLogo(token.symbol)}" alt="{token.symbol}"></span>
 						{#if chain === keyChain}
-							{#if activationCost.tokens > balance}
+							{#if activationCost.formatted > balance}
 								<span class="error">Insufficient {token.symbol} balance in wallet.</span>
 							{:else if keyDuration <= 0}
 								<span class="error">Invalid duration selected.</span>
-							{:else if allowance >= activationCost.tokens}
+							{:else if allowance >= activationCost.formatted}
 								{#if activationInProgress}
 									<span class="createNewKey inProgress">Creating New Key...</span>
 								{:else}

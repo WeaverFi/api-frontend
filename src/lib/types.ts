@@ -14,8 +14,8 @@ export interface ExtendedKeyInfo extends KeyInfo {
 
 // Cost Interface:
 export interface Cost {
-  wei: ethers.BigNumber | undefined
-  tokens: number | undefined
+  amount: ethers.BigNumber | undefined
+  formatted: number | undefined
 }
 
 // Wallet Connection Interface:
@@ -25,4 +25,13 @@ export interface WalletConnection {
   chain: Chain | undefined
   address: Address | undefined
   ens: ENSDomain | undefined
+}
+
+// API Tier Interface:
+export interface Tier {
+  id: number
+  name: string
+  dailyRateLimit: number
+  monthlyPrice: number
+  unitPricePerSecond: number
 }

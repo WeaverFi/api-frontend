@@ -5,30 +5,22 @@ import { KeyManager } from '3pi';
 import weaver from 'weaverfi';
 
 // Type Imports:
-import type { Cost } from '$lib/types';
+import type { Cost, Tier } from '$lib/types';
 import type { Token, KeyInfo } from '3pi/dist/types';
 import type { Chain, Address, Hash } from 'weaverfi/dist/types';
 
-// API Tier Interface:
-interface Tier {
-  id: number
-  name: string
-  dailyRateLimit: number
-  monthlyPrice: number
-  weiPricePerSecond: number
-}
-
 // 3PI Contract Addresses:
 export const contractAddresses: Partial<Record<Chain, Address>> = {
-  mumbai: '0xF50D1cAF40E1dE56198F262ACA4A3745De0A88dC' // <TODO> REMOVE
+  op: '0xF50D1cAF40E1dE56198F262ACA4A3745De0A88dC',
+  poly: '0xF50D1cAF40E1dE56198F262ACA4A3745De0A88dC'
 }
 
 // 3PI Price Tiers:
 export const apiTiers: Tier[] = [
-  { id: 0, name: 'Free', dailyRateLimit: 50, monthlyPrice: 0, weiPricePerSecond: 0 },
-  { id: 1, name: 'Crawler', dailyRateLimit: 500, monthlyPrice: 10, weiPricePerSecond: 3_805_175_038_052 }, // <TODO> input appropriate prices in USDC from actual contract
-  { id: 2, name: 'Weaver', dailyRateLimit: 1500, monthlyPrice: 25, weiPricePerSecond: 9_512_937_595_130 }, // <TODO> input appropriate prices in USDC from actual contract
-  { id: 3, name: 'Hunter', dailyRateLimit: 4000, monthlyPrice: 50, weiPricePerSecond: 19_025_875_190_259 } // <TODO> input appropriate prices in USDC from actual contract
+  { id: 0, name: 'Free', dailyRateLimit: 50, monthlyPrice: 0, unitPricePerSecond: 0 },
+  { id: 1, name: 'Crawler', dailyRateLimit: 500, monthlyPrice: 10, unitPricePerSecond: 4 },
+  { id: 2, name: 'Weaver', dailyRateLimit: 1500, monthlyPrice: 24, unitPricePerSecond: 9 },
+  { id: 3, name: 'Hunter', dailyRateLimit: 4000, monthlyPrice: 50, unitPricePerSecond: 19 }
 ];
 
 /* ========================================================================================================================================================================= */
@@ -51,8 +43,6 @@ export const getChain = (chainID: number): Chain | undefined => {
     return 'op';
   } else if(chainID === 42161) {
     return 'arb';
-  } else if(chainID === 80001) { // <TODO> REMOVE
-    return 'mumbai';
   } else {
     return undefined;
   }
@@ -98,10 +88,10 @@ export const initKeyManager = (chain: Chain) => {
 
 // Function to calculate key update cost:
 export const calcCost = (token: Token | undefined, tierID: number, duration: number) => {
-  const cost: Cost = { wei: undefined, tokens: undefined };
+  const cost: Cost = { amount: undefined, formatted: undefined };
   if(token) {
-    cost.wei = ethers.BigNumber.from(apiTiers[tierID].weiPricePerSecond).mul(duration);
-    cost.tokens = parseFloat(ethers.utils.formatUnits(cost.wei, token.decimals));
+    cost.amount = ethers.BigNumber.from(apiTiers[tierID].unitPricePerSecond).mul(duration);
+    cost.formatted = parseFloat(ethers.utils.formatUnits(cost.amount, token.decimals));
   }
   return cost;
 }

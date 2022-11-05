@@ -64,13 +64,13 @@
 
 	// Function to update approval amount:
 	const updateApproval = async () => {
-		if(extensionCost.wei) {
+		if(extensionCost.amount) {
 			try {
 				approvalInProgress = true;
 				if(infiniteApproval) {
 					await keyManager.approve(ethers.constants.MaxUint256, signer);
 				} else {
-					await keyManager.approve(extensionCost.wei, signer);
+					await keyManager.approve(extensionCost.amount, signer);
 				}
 			} finally {
 				approvalInProgress = false;
@@ -92,15 +92,15 @@
 		<span><strong>Extend Duration By:</strong> <DurationSelector bind:selectedDuration={extensionDuration} /></span>
 	</div>
 	<hr>
-	{#if extensionCost.tokens !== undefined}
+	{#if extensionCost.formatted !== undefined}
 		<div class="results">
-			<span class="cost"><strong>Key Extension Cost:</strong> {extensionCost.tokens?.toLocaleString(undefined, { maximumFractionDigits: 2 })} {token.symbol} <img src="{weaver[key.chain].getTokenLogo(token.symbol)}" alt="{token.symbol}"></span>
+			<span class="cost"><strong>Key Extension Cost:</strong> {extensionCost.formatted?.toLocaleString(undefined, { maximumFractionDigits: 2 })} {token.symbol} <img src="{weaver[key.chain].getTokenLogo(token.symbol)}" alt="{token.symbol}"></span>
 			{#if chain === key.chain}
-				{#if extensionCost.tokens > balance}
+				{#if extensionCost.formatted > balance}
 					<span class="error">Insufficient {token.symbol} balance in wallet.</span>
 				{:else if extensionDuration <= 0}
 					<span class="error">Invalid duration selected.</span>
-				{:else if allowance >= extensionCost.tokens}
+				{:else if allowance >= extensionCost.formatted}
 					{#if extensionInProgress}
 						<span class="extendKeyDuration inProgress">Extending Key...</span>
 					{:else}

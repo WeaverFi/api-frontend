@@ -4,6 +4,7 @@
 	import { apiTiers } from "$lib/functions";
 
 	// Initializations:
+	const tokenDecimals: number = 6;
 	let timeSelection: 'weekly' | 'monthly' = 'monthly';
 
 </script>
@@ -29,13 +30,13 @@
 						{#if tier.monthlyPrice === 0}
 							-
 						{:else if timeSelection === 'weekly'}
-							${(tier.monthlyPrice * 12 / 52).toLocaleString(undefined, { maximumFractionDigits: 2 })}
+							~${(tier.monthlyPrice * 12 / 52).toLocaleString(undefined, { maximumFractionDigits: 2 })}
 						{:else if timeSelection === 'monthly'}
-							${tier.monthlyPrice}
+							~${tier.monthlyPrice}
 						{/if}
 					</span>
 					{#if tier.monthlyPrice}
-						<span class="small">${(tier.monthlyPrice * 12 / 365).toLocaleString(undefined, { maximumFractionDigits: 2 })} /day</span>
+						<span class="small">${(tier.unitPricePerSecond * 60 * 60 * 24 / (10 ** tokenDecimals)).toLocaleString(undefined, { maximumFractionDigits: 2 })} /day</span>
 					{/if}
 				</div>
 				<div class="rateLimits">
