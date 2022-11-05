@@ -300,5 +300,23 @@
 		cursor: pointer;
 		user-select: none;
 	}
+
+	@media screen and (max-width: 450px) {
+		span.apiKey {
+			font-size: 1em;
+		}
+	}
+
+	@media screen and (max-width: 350px) {
+		span.apiKey {
+			font-size: .9em;
+		}
+	}
+
+	@media screen and (max-width: 300px) {
+		span.apiKey {
+			font-size: .8em;
+		}
+	}
 	
 </style>

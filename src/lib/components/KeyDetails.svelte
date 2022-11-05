@@ -78,6 +78,7 @@
 		margin-left: 1em;
 		color: var(--tertiaryColor);
 		font-size: .9em;
+		white-space: normal;
 	}
 
 	span.expiry {
