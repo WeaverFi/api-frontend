@@ -110,13 +110,14 @@
 		flex-direction: column;
 		width: 100%;
 		color: var(--secondaryColor);
-		background-color: var(--accentColor);
+		background-color: #eee;
+		background: linear-gradient(135deg, white -20%, var(--primaryColor) 150%);
 		border-radius: .5em;
 		box-shadow: 0 0 5px black;
 	}
 	
 	div.keyWrapper.active span.status {
-		color: green;
+		color: var(--primaryColor);
 		font-weight: bold;
 	}
 

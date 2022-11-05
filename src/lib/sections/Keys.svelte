@@ -79,7 +79,7 @@
 <style>
 
 	section {
-		background-color: var(--terciaryColor);
+		background-color: var(--tertiaryColor);
 	}
 
 	div.top {
