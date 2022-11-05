@@ -1,6 +1,6 @@
 {
 	"name": "api-frontend",
-	"version": "0.6.7",
+	"version": "0.6.8",
 	"type": "module",
 	"scripts": {
 		"dev": "vite dev",
@@ -20,6 +20,6 @@
 	"dependencies": {
 		"3pi": "^0.6.9",
 		"ethers": "^5.7.2",
-		"weaverfi": "1.33.4"
+		"weaverfi": "1.33.5"
 	}
 }
