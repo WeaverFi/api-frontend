@@ -21,8 +21,8 @@
 		</div>
 	</div>
 	<div class="tiers">
-		{#each apiTiers as tier}
-			<div class="tier">
+		{#each apiTiers as tier, i}
+			<div class="tier" style:background-color="hsl(264, 45%, {20 + i * 10}%)">
 				<span class="name">{tier.name}</span>
 				<div class="prices">
 					<span class="price">
@@ -91,7 +91,7 @@
 	}
 
 	div.tier:hover {
-		background-color: var(--terciaryColor);
+		filter: brightness(1.2);
 	}
 
 	div.tier:first-of-type {

@@ -178,7 +178,7 @@
 		gap: .5em;
 		width: 100%;
 		color: var(--secondaryColor);
-		background-color: var(--accentColor);
+		background-color: var(--lightPrimaryColor);
 		border-radius: .5em;
 		box-shadow: 0 0 5px black;
 	}

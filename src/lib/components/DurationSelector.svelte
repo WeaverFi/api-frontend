@@ -70,7 +70,7 @@
 
 	span.scale > span:not(.selected) {
 		color: var(--secondaryColor);
-		background-color: var(--accentColor);
+		background-color: var(--lightPrimaryColor);
 	}
 	
 </style>

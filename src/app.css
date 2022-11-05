@@ -3,10 +3,11 @@
 :root {
 	--primaryColor: #7446B9;
 	--secondaryColor: hsl(0, 0%, 9%);
-	--terciaryColor: hsl(0, 0%, 12%);
+	--tertiaryColor: hsl(0, 0%, 12%);
 	--accentColor: #FFDB29;
 	--fontColor: #ffffff;
 	--secondaryFontColor: hsla(0, 0%, 100%, 0.5);
+	--lightPrimaryColor: hsl(264, 45%, 75%);
 }
 
 * {

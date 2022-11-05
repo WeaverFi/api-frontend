@@ -76,7 +76,7 @@
 
 	span.rateLimitWarning {
 		margin-left: 1em;
-		color: var(--terciaryColor);
+		color: var(--tertiaryColor);
 		font-size: .9em;
 	}
 
