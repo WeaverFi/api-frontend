@@ -40,8 +40,10 @@
 		flex: 1;
 		display: flex;
 		flex-direction: column;
+		justify-content: center;
 		align-items: center;
 		padding-top: 1em;
+		padding-bottom: 3em;
 	}
 
 	span.remainingBalance {
