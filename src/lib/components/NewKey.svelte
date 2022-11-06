@@ -74,6 +74,7 @@
 	// Function to fetch current wallet balance:
 	const fetchBalance = async () => {
 		if(keyManager) {
+			balance = 0;
 			balance = await keyManager.getWalletBalance(address);
 		}
 	}
@@ -81,6 +82,7 @@
 	// Function to fetch current wallet allowance value:
 	const fetchAllowance = async () => {
 		if(keyManager) {
+			allowance = 0;
 			allowance = await keyManager.getWalletAllowance(address);
 		}
 	}
