@@ -74,7 +74,7 @@
 {#if displayExpired || keyActive}
 	<div class="keyWrapper" class:active={keyActive} transition:fade|local={{ duration: 200 }}>
 		<div class="top" on:click={() => isCollapsed = !isCollapsed} on:keydown={() => isCollapsed = !isCollapsed}>
-			<img src="/chains/{key.chain}.svg" alt="{weaver[key.chain].getInfo().name}">
+			<img class="chainIcon" src="/chains/{key.chain}.svg" alt="{weaver[key.chain].getInfo().name}">
 			<span class="hash" title="{key.hash}">{key.hash.slice(0, 6)}...{key.hash.slice(-4)}</span>
 			<span class="status">{keyActive ? 'Active' : 'Inactive'}</span>
 			<i class="icofont-rounded-{isCollapsed ? 'down' : 'up'}" />
@@ -136,6 +136,11 @@
 
 	div.top > span.hash {
 		flex: 1;
+	}
+
+	div.top > .chainIcon {
+		width: 1.8em;
+		height: 1.8em;
 	}
 
 	div.keyInfo {
