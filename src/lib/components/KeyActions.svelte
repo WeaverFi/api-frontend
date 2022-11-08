@@ -42,8 +42,7 @@
 		flex-direction: column;
 		justify-content: center;
 		align-items: center;
-		padding-top: 1em;
-		padding-bottom: 3em;
+		padding: 1em 0 3em;
 	}
 
 	span.remainingBalance {

@@ -86,35 +86,34 @@
 	}
 
 	table {
-		text-align: left;
 		width: fit-content;
+		text-align: left;
 	}
 
 	table td, table th {
-		border-bottom: 1px dashed #888;
 		padding: 0.5em 1em;
+		border-bottom: 1px dashed #888;
 	}
 
 	.keyHash .address {
-		cursor: copy;
 		position: relative;
+		cursor: copy;
 	}
 
 	.keyHash .address.copied::after {
 		content: "Copied!";
 		position: absolute;
 		inset: 0;
-		background-color: var(--primaryColor);
-		color: var(--fontColor);
 		display: flex;
 		justify-content: center;
 		align-items: center;
+		color: var(--fontColor);
+		background-color: var(--primaryColor);
 		border-radius: 5px;
 	}
 
 	td.rateLimitWarning {
-		margin-left: 1em;
-		margin-top: 0.5em;
+		margin: 0.5em 0 0 1em;
 		color: var(--tertiaryColor);
 		font-size: .9em;
 		white-space: normal;
