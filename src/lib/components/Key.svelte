@@ -138,7 +138,7 @@
 		flex: 1;
 	}
 
-	div.top > .chainIcon {
+	div.top > img.chainIcon {
 		width: 1.8em;
 		height: 1.8em;
 	}

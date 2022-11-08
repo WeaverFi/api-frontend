@@ -30,28 +30,42 @@
 <!-- #################################################################################################### -->
 
 <div class="keyDetails">
-	<span><strong>Chain:</strong> {weaver[key.chain].getInfo().name}</span>
-	<span class="keyHash">
-		<strong>Public Hash:</strong> {key.hash.slice(0, 8)}...{key.hash.slice(-6)}
-		{#if copiedHash}
-			Copied!
-		{:else}
-			<i class="icofont-ui-copy" on:click={copyHash} on:keydown={copyHash} />
+	<table>
+		<tr>
+			<th>Chain:</th>
+			<td>{weaver[key.chain].getInfo().name}</td>
+		</tr>
+		<tr class="keyHash">
+			<th>Public Hash:</th>
+			<td>
+				<span class="address" on:click={copyHash} on:keydown={copyHash} class:copied={copiedHash}>
+					{key.hash.slice(0, 8)}...{key.hash.slice(-6)}
+					<i class="icofont-ui-copy" />
+				</span>
+			</td>
+		</tr>
+		<tr>
+			<th>Tier:</th>
+			<td>{tier.name} (${tier.monthlyPrice} /month)</td>
+		</tr>
+		<tr>
+			<th>Daily Rate Limit:</th>
+			<td>{tier.dailyRateLimit} Requests</td>
+		</tr>
+		{#if keyActive && timeNow < (key.startTime + secondsInADay)}
+			<tr>
+				<td colspan="2" class="rateLimitWarning">This key was activated less than 24 hours ago, so its rate limit is still ramping up.</td>
+			</tr>
 		{/if}
-	</span>
-	<span><strong>Tier:</strong> {tier.name} (${tier.monthlyPrice} /month)</span>
-	<span><strong>Daily Rate Limit:</strong> {tier.dailyRateLimit} Requests</span>
-	{#if keyActive && timeNow < (key.startTime + secondsInADay)}
-		<span class="rateLimitWarning">This key was activated less than 24 hours ago, so its rate limit is still ramping up.</span>
-	{/if}
-	{#if keyActive}
-		<span><strong>Key valid until {formatDate(key.expiryTime)}.</strong></span>
-	{:else}
-		<span class="expiry">
+	</table>
+	<span class="expiry">
+		{#if keyActive}
+			<strong>Key valid until {formatDate(key.expiryTime)}.</strong>
+		{:else}
 			<span>Key expired on {formatDate(key.expiryTime)}.</span>
 			<span class="reactivateKey" on:click={() => onClickReActivate()} on:keydown={() => onClickReActivate()}>Click here to extend key's duration.</span>
-		</span>
-	{/if}
+		{/if}
+	</span>
 </div>
 
 <!-- #################################################################################################### -->
@@ -62,6 +76,7 @@
 		flex: 1;
 		display: flex;
 		flex-direction: column;
+		align-items: center;
 		padding-top: 1em;
 		white-space: nowrap;
 	}
@@ -70,12 +85,35 @@
 		margin-top: 1em;
 	}
 
-	span.keyHash > i {
-		cursor: pointer;
+	table {
+		width: fit-content;
+		text-align: left;
 	}
 
-	span.rateLimitWarning {
-		margin-left: 1em;
+	table td, table th {
+		padding: 0.5em 1em;
+		border-bottom: 1px dashed #888;
+	}
+
+	.keyHash .address {
+		position: relative;
+		cursor: copy;
+	}
+
+	.keyHash .address.copied::after {
+		content: "Copied!";
+		position: absolute;
+		inset: 0;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		color: var(--fontColor);
+		background-color: var(--primaryColor);
+		border-radius: 5px;
+	}
+
+	td.rateLimitWarning {
+		margin: 0.5em 0 0 1em;
 		color: var(--tertiaryColor);
 		font-size: .9em;
 		white-space: normal;
@@ -85,6 +123,7 @@
 		display: flex;
 		gap: .5em;
 		flex-wrap: wrap;
+		margin-bottom: 1em;
 	}
 
 	span.reactivateKey {
