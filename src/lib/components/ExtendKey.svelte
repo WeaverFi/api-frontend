@@ -28,6 +28,8 @@
 	let approvalInProgress: boolean = false;
 	let extensionInProgress: boolean = false;
 	let extensionDuration: number = secondsInAMonth;
+	let fetchingBalance: boolean = false;
+	let fetchingAllowance: boolean = false;
 
 	// Reactive Wallet Info:
 	$: address, fetchBalance();
@@ -54,12 +56,18 @@
 
 	// Function to fetch current wallet balance:
 	const fetchBalance = async () => {
+		fetchingBalance = true;
+		balance = 0;
 		balance = await keyManager.getWalletBalance(address);
+		fetchingBalance = false;
 	}
 
 	// Function to fetch current wallet allowance value:
 	const fetchAllowance = async () => {
+		fetchingAllowance = true;
+		balance = 0;
 		allowance = await keyManager.getWalletAllowance(address);
+		fetchingAllowance = false;
 	}
 
 	// Function to update approval amount:
@@ -96,26 +104,28 @@
 		<div class="results">
 			<span class="cost"><strong>Key Extension Cost:</strong> {extensionCost.formatted?.toLocaleString(undefined, { maximumFractionDigits: 2 })} {token.symbol} <img src="{weaver[key.chain].getTokenLogo(token.symbol)}" alt="{token.symbol}"></span>
 			{#if chain === key.chain}
-				{#if extensionCost.formatted > balance}
-					<span class="error">Insufficient {token.symbol} balance in wallet.</span>
-				{:else if extensionDuration <= 0}
-					<span class="error">Invalid duration selected.</span>
-				{:else if allowance >= extensionCost.formatted}
-					{#if extensionInProgress}
-						<span class="extendKeyDuration inProgress">Extending Key...</span>
-					{:else}
-						<span class="extendKeyDuration" on:click={extendKeyDuration} on:keydown={extendKeyDuration}>Extend Key Duration</span>
-					{/if}
-				{:else}
-					<span class="approvalInfo">
-						{#if approvalInProgress}
-							<span class="approve inProgress">Approving {token.symbol}...</span>
+				{#if !fetchingBalance && !fetchingAllowance}
+					{#if extensionCost.formatted > balance}
+						<span class="error">Insufficient {token.symbol} balance in wallet.</span>
+					{:else if extensionDuration <= 0}
+						<span class="error">Invalid duration selected.</span>
+					{:else if allowance >= extensionCost.formatted}
+						{#if extensionInProgress}
+							<span class="extendKeyDuration inProgress">Extending Key...</span>
 						{:else}
-							<input type="checkbox" id="infiniteApproval" bind:checked={infiniteApproval} >
-							<label class="enableInfiniteApproval" for="infiniteApproval">Infinite Approval? <i class="icofont-ui-{infiniteApproval ? 'check' : 'close'}" /></label>
-							<span class="approve" on:click={updateApproval} on:keydown={updateApproval}>Approve {token.symbol}</span>
+							<span class="extendKeyDuration" on:click={extendKeyDuration} on:keydown={extendKeyDuration}>Extend Key Duration</span>
 						{/if}
-					</span>
+					{:else}
+						<span class="approvalInfo">
+							{#if approvalInProgress}
+								<span class="approve inProgress">Approving {token.symbol}...</span>
+							{:else}
+								<input type="checkbox" id="infiniteApproval" bind:checked={infiniteApproval} >
+								<label class="enableInfiniteApproval" for="infiniteApproval">Infinite Approval? <i class="icofont-ui-{infiniteApproval ? 'check' : 'close'}" /></label>
+								<span class="approve" on:click={updateApproval} on:keydown={updateApproval}>Approve {token.symbol}</span>
+							{/if}
+						</span>
+					{/if}
 				{/if}
 			{:else}
 				<span class="error">Please connect to the {weaver[key.chain].getInfo().name} network.</span>

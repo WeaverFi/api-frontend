@@ -32,6 +32,8 @@
 	let approvalInProgress: boolean = false;
 	let activationInProgress: boolean = false;
 	let displayingNewKey: boolean = false;
+	let fetchingBalance: boolean = false;
+	let fetchingAllowance: boolean = false;
 
 	// New Key Info:
 	let keyChain: Chain = 'op';
@@ -74,16 +76,20 @@
 	// Function to fetch current wallet balance:
 	const fetchBalance = async () => {
 		if(keyManager) {
+			fetchingBalance = true;
 			balance = 0;
 			balance = await keyManager.getWalletBalance(address);
+			fetchingBalance = false;
 		}
 	}
 
 	// Function to fetch current wallet allowance value:
 	const fetchAllowance = async () => {
 		if(keyManager) {
+			fetchingAllowance = true;
 			allowance = 0;
 			allowance = await keyManager.getWalletAllowance(address);
+			fetchingAllowance = false;
 		}
 	}
 
@@ -138,26 +144,28 @@
 					<div class="results">
 						<span class="cost"><strong>Key Activation Cost:</strong> {activationCost.formatted?.toLocaleString(undefined, { maximumFractionDigits: 2 })} {token.symbol} <img src="{weaver[keyChain].getTokenLogo(token.symbol)}" alt="{token.symbol}"></span>
 						{#if chain === keyChain}
-							{#if activationCost.formatted > balance}
-								<span class="error">Insufficient {token.symbol} balance in wallet.</span>
-							{:else if keyDuration <= 0}
-								<span class="error">Invalid duration selected.</span>
-							{:else if allowance >= activationCost.formatted}
-								{#if activationInProgress}
-									<span class="createNewKey inProgress">Creating New Key...</span>
-								{:else}
-									<span class="createNewKey" on:click={createNewKey} on:keydown={createNewKey}>Create New Key</span>
-								{/if}
-							{:else}
-								<span class="approvalInfo">
-									{#if approvalInProgress}
-										<span class="approve inProgress">Approving {token.symbol}...</span>
+							{#if !fetchingBalance && !fetchingAllowance}
+								{#if activationCost.formatted > balance}
+									<span class="error">Insufficient {token.symbol} balance in wallet.</span>
+								{:else if keyDuration <= 0}
+									<span class="error">Invalid duration selected.</span>
+								{:else if allowance >= activationCost.formatted}
+									{#if activationInProgress}
+										<span class="createNewKey inProgress">Creating New Key...</span>
 									{:else}
-										<input type="checkbox" id="infiniteApproval" bind:checked={infiniteApproval} >
-										<label class="enableInfiniteApproval" for="infiniteApproval">Infinite Approval? <i class="icofont-ui-{infiniteApproval ? 'check' : 'close'}" /></label>
-										<span class="approve" on:click={updateApproval} on:keydown={updateApproval}>Approve {token.symbol}</span>
+										<span class="createNewKey" on:click={createNewKey} on:keydown={createNewKey}>Create New Key</span>
 									{/if}
-								</span>
+								{:else}
+									<span class="approvalInfo">
+										{#if approvalInProgress}
+											<span class="approve inProgress">Approving {token.symbol}...</span>
+										{:else}
+											<input type="checkbox" id="infiniteApproval" bind:checked={infiniteApproval} >
+											<label class="enableInfiniteApproval" for="infiniteApproval">Infinite Approval? <i class="icofont-ui-{infiniteApproval ? 'check' : 'close'}" /></label>
+											<span class="approve" on:click={updateApproval} on:keydown={updateApproval}>Approve {token.symbol}</span>
+										{/if}
+									</span>
+								{/if}
 							{/if}
 						{:else}
 							<span class="error">Please connect to the {weaver[keyChain].getInfo().name} network.</span>

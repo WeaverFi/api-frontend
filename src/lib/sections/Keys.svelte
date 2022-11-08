@@ -11,7 +11,7 @@
   import type { ExtendedKeyInfo, WalletConnection } from '$lib/types';
 
 	// Initializations:
-	let wallet: WalletConnection | undefined;
+	let wallet: Partial<WalletConnection> | undefined;
 	let keys: ExtendedKeyInfo[] = [];
 	let fetching: boolean = false;
 	let displayExpired: boolean = true;
@@ -58,7 +58,7 @@
 						<span class="loading">Loading keys...</span>
 					{:else}
 						{#each [...keys].reverse() as key}
-							<Key {key} chain={wallet.chain} address={wallet.address} signer={wallet.signer} {displayExpired} onKeyUpdated={async () => getWalletInfo({ force: true })} />
+							<Key {key} chain={wallet.chain} address={wallet.address} signer={wallet.signer} displayExpired onKeyUpdated={async () => getWalletInfo({ force: true })} />
 						{/each}
 					{/if}
 					<NewKey chain={wallet.chain} address={wallet.address} signer={wallet.signer} onKeyCreated={async () => getWalletInfo({ force: true, reset: true })} />

@@ -20,11 +20,11 @@ export interface Cost {
 
 // Wallet Connection Interface:
 export interface WalletConnection {
-  signer: ethers.providers.JsonRpcSigner | undefined
-  chainID: number | undefined
-  chain: Chain | undefined
-  address: Address | undefined
-  ens: ENSDomain | undefined
+  signer: ethers.providers.JsonRpcSigner
+  chainID: number
+  chain: Chain
+  address: Address
+  ens: ENSDomain
 }
 
 // API Tier Interface:
