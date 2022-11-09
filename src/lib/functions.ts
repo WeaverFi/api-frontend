@@ -17,10 +17,10 @@ export const contractAddresses: Partial<Record<Chain, Address>> = {
 
 // 3PI Price Tiers:
 export const apiTiers: Tier[] = [
-  { id: 0, name: 'Free', dailyRateLimit: 50, monthlyPrice: 0, unitPricePerSecond: 0 },
-  { id: 1, name: 'Crawler', dailyRateLimit: 500, monthlyPrice: 10, unitPricePerSecond: 4 },
-  { id: 2, name: 'Weaver', dailyRateLimit: 1500, monthlyPrice: 24, unitPricePerSecond: 9 },
-  { id: 3, name: 'Hunter', dailyRateLimit: 4000, monthlyPrice: 50, unitPricePerSecond: 19 }
+  { id: 0, name: 'Free', dailyRateLimit: 100, monthlyPrice: 0, unitPricePerSecond: 0 },
+  { id: 1, name: 'Crawler', dailyRateLimit: 1000, monthlyPrice: 10, unitPricePerSecond: 4 },
+  { id: 2, name: 'Weaver', dailyRateLimit: 3000, monthlyPrice: 24, unitPricePerSecond: 9 },
+  { id: 3, name: 'Hunter', dailyRateLimit: 8000, monthlyPrice: 50, unitPricePerSecond: 19 }
 ];
 
 /* ========================================================================================================================================================================= */
