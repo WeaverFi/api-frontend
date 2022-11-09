@@ -55,7 +55,7 @@
 		if(keyManager) {
 			try {
 				activationInProgress = true;
-				apiKeyGenerated = keyManager.generateNewKey();
+				apiKeyGenerated = keyManager.generateNewKey({ append: keyChain.slice(0, 2) });
 				const keyHash = keyManager.getPublicHash(apiKeyGenerated);
 				await keyManager.activateKey(keyHash, keyDuration, keyTierID, signer);
 				fetchBalance();
