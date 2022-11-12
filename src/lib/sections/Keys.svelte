@@ -57,8 +57,8 @@
 					{:else if fetching}
 						<span class="loading">Loading keys...</span>
 					{:else}
-						{#each [...keys].reverse() as key}
-							<Key {key} chain={wallet.chain} address={wallet.address} signer={wallet.signer} displayExpired onKeyUpdated={async () => getWalletInfo({ force: true })} />
+						{#each keys as key}
+							<Key {key} chain={wallet.chain} address={wallet.address} signer={wallet.signer} {displayExpired} onKeyUpdated={async () => getWalletInfo({ force: true })} />
 						{/each}
 					{/if}
 					<NewKey chain={wallet.chain} address={wallet.address} signer={wallet.signer} onKeyCreated={async () => getWalletInfo({ force: true, reset: true })} />
