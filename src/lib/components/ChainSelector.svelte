@@ -5,7 +5,7 @@
 	import weaver from 'weaverfi';
 
 	// Type Imports:
-	import type { Chain } from 'weaverfi/dist/types';
+	import type { Chain } from 'weaverfi';
 
 	// Initializations:
 	export let selectedChain: Chain;

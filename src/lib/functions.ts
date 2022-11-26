@@ -5,9 +5,9 @@ import { KeyManager } from '3pi';
 import weaver from 'weaverfi';
 
 // Type Imports:
+import type { Token, KeyInfo } from '3pi';
 import type { Cost, Tier } from '$lib/types';
-import type { Token, KeyInfo } from '3pi/dist/types';
-import type { Chain, Address, Hash } from 'weaverfi/dist/types';
+import type { Chain, Address, Hash } from 'weaverfi';
 
 // 3PI Contract Addresses:
 export const contractAddresses: Partial<Record<Chain, Address>> = {

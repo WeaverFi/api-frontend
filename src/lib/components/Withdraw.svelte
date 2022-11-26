@@ -5,9 +5,8 @@
 	
 	// Type Imports:
 	import type { ethers } from 'ethers';
-  import type { KeyManager } from '3pi';
-	import type { Token } from '3pi/dist/types';
-	import type { Chain } from 'weaverfi/dist/types';
+	import type { Chain } from 'weaverfi';
+  import type { KeyManager, Token } from '3pi';
   import type { ExtendedKeyInfo } from '$lib/types';
 
 	// Initializations:

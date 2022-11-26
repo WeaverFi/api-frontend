@@ -7,7 +7,7 @@
 	import Wallet from '$lib/components/Wallet.svelte';
 
 	// Type Imports:
-  import type { Address } from 'weaverfi/dist/types';
+  import type { Address } from 'weaverfi';
   import type { ExtendedKeyInfo, WalletConnection } from '$lib/types';
 
 	// Initializations:

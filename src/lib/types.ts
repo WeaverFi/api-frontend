@@ -1,8 +1,8 @@
 
 // Type Imports:
+import type { KeyInfo } from '3pi';
 import type { ethers } from 'ethers';
-import type { KeyInfo } from '3pi/dist/types';
-import type { Chain, Address, Hash, ENSDomain } from 'weaverfi/dist/types';
+import type { Chain, Address, Hash, ENSDomain } from 'weaverfi';
 
 /* ========================================================================================================================================================================= */
 

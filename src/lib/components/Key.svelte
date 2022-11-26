@@ -11,9 +11,9 @@
 	import KeyActions from '$lib/components/KeyActions.svelte';
 
 	// Type Imports:
-	import type { Token } from '3pi/dist/types';
+	import type { Token } from '3pi';
+	import type { Chain, Address } from 'weaverfi';
 	import type { ExtendedKeyInfo } from '$lib/types';
-	import type { Chain, Address } from 'weaverfi/dist/types';
 
 	// Initializations:
 	export let key: ExtendedKeyInfo;

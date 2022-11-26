@@ -10,8 +10,8 @@
 	import DurationSelector from '$lib/components/DurationSelector.svelte';
 
 	// Type Imports:
-  import type { Token } from '3pi/dist/types';
-	import type { Chain, Address } from 'weaverfi/dist/types';
+  import type { Token } from '3pi';
+	import type { Chain, Address } from 'weaverfi';
 
 	// Initializations:
   export let chain: Chain;

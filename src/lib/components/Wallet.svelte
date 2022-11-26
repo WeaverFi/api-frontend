@@ -8,7 +8,7 @@
 
   // Type Imports:
   import type { WalletConnection } from '$lib/types';
-  import type { Address, ENSDomain } from 'weaverfi/dist/types';
+  import type { Address, ENSDomain } from 'weaverfi';
 
   // Initializations:
   export let wallet: Partial<WalletConnection> = {};

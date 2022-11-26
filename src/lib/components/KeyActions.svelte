@@ -4,7 +4,7 @@
 	import weaver from 'weaverfi';
 
 	// Type Imports:
-	import type { Token } from '3pi/dist/types';
+	import type { Token } from '3pi';
   import type { ExtendedKeyInfo } from '$lib/types';
 
 	// Initializations:
