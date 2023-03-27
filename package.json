@@ -20,6 +20,6 @@
 	"dependencies": {
 		"3pi": "1.0.3",
 		"ethers": "^5.7.2",
-		"weaverfi": "1.35.2"
+		"weaverfi": "1.37.1"
 	}
 }
